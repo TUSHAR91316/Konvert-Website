@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Konvert - Advanced File Management & Conversion Tool</title>
+  <meta name="description"
+    content="Process files locally on your device with hybrid cloud support. Privacy-first, security-focused, and lightning fast." />
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:;">
+  <link rel="stylesheet" href="style.css" />
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+  <!-- Theme Toggle -->
+  <button id="theme-toggle" aria-label="Toggle theme">
+    <span id="moon-wrapper"><i data-lucide="moon"></i></span>
+    <span id="sun-wrapper" style="display: none;"><i data-lucide="sun"></i></span>
+  </button>
+
+  <!-- Hero Section -->
+  <section class="hero relative overflow-hidden">
+    <div class="bg-grid-pattern absolute inset-0 opacity-5 dark-opacity-10"></div>
+    <!-- Animated Blobs -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <div class="container relative">
+      <div class="hero-content text-center animate-fade-in">
+        <div class="logo-wrapper">
+          <img src="readme_icon.png" alt="Konvert Logo" class="logo-icon-img">
+        </div>
+
+        <h1 class="hero-title">Konvert</h1>
+        <p class="hero-subtitle">Advanced File Management & Conversion Tool</p>
+        <p class="hero-desc">
+          Process files locally on your device with hybrid cloud support.
+          <span class="highlight-emerald">Privacy-first</span>,
+          <span class="highlight-cyan">security-focused</span>, and lightning fast.
+        </p>
+
+        <div class="hero-buttons">
+          <a href="app-release.apk" class="btn btn-primary" id="download-android-hero">
+            <div class="btn-glow"></div>
+            <i data-lucide="download"></i>
+            <span>Download for Android</span>
+          </a>
+          <button class="btn btn-secondary" onclick="alert('Coming soon!')">
+            <div class="btn-glow"></div>
+            <i data-lucide="download"></i>
+            <span>Download for Windows</span>
+          </button>
+        </div>
+
+        <div class="hero-badges">
+          <div class="badge">
+            <i data-lucide="shield" class="text-emerald"></i>
+            <span>VirusTotal Protected</span>
+          </div>
+          <div class="badge">
+            <i data-lucide="lock" class="text-cyan"></i>
+            <span>Local Processing</span>
+          </div>
+          <div class="badge">
+            <i data-lucide="zap" class="text-emerald"></i>
+            <span>Lightning Fast</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features section-padding">
+    <div class="container">
+      <div class="section-header text-center">
+        <h2 class="section-title">Why Choose Konvert?</h2>
+        <p class="section-subtitle">Experience the next generation of file management tools.</p>
+      </div>
+
+      <div class="features-grid">
+        <!-- Feature 1 -->
+        <div class="feature-card reveal">
+          <div class="feature-icon-wrapper bg-gradient-emerald">
+            <i data-lucide="refresh-cw"></i>
+          </div>
+          <h3>Smart File Conversion</h3>
+          <p>Hybrid Engine: Automatically chooses the best way (Local or Cloud) to convert your file based on format.
+          </p>
+        </div>
+        <!-- Feature 2 -->
+        <div class="feature-card reveal" style="transition-delay: 0.1s">
+          <div class="feature-icon-wrapper bg-gradient-cyan">
+            <i data-lucide="minimize-2"></i>
+          </div>
+          <h3>Compression Studio</h3>
+          <p>Reduce image size efficiently with Quality Mode or Target Size Mode (e.g., "Max 500 KB").</p>
+        </div>
+        <!-- Feature 3 -->
+        <div class="feature-card reveal" style="transition-delay: 0.2s">
+          <div class="feature-icon-wrapper bg-gradient-purple">
+            <i data-lucide="shield-check"></i>
+          </div>
+          <h3>Advanced Security</h3>
+          <p>Auto-Scan Integration with VirusTotal ensures files are checked for malware before conversion.</p>
+        </div>
+        <!-- Feature 4 -->
+        <div class="feature-card reveal" style="transition-delay: 0.3s">
+          <div class="feature-icon-wrapper bg-gradient-orange">
+            <i data-lucide="history"></i>
+          </div>
+          <h3>History & Management</h3>
+          <p>Keep track of all your past tasks locally. Offline access to your conversion history.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tech Stack Section -->
+  <section class="tech-stack section-padding">
+    <div class="container">
+      <div class="section-header text-center reveal">
+        <h2 class="section-title">Built With</h2>
+        <p class="section-subtitle">Modern technologies powering the platform.</p>
+      </div>
+      <div class="tech-grid reveal">
+        <div class="tech-item"><i data-lucide="layers"></i> Flutter (Dart)</div>
+        <div class="tech-item"><i data-lucide="code"></i> Python (FastAPI)</div>
+        <div class="tech-item"><i data-lucide="database"></i> LibreOffice</div>
+        <div class="tech-item"><i data-lucide="shield"></i> VirusTotal API</div>
+        <div class="tech-item"><i data-lucide="box"></i> Docker</div>
+        <div class="tech-item"><i data-lucide="git-branch"></i> GitHub Actions</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Comparison Section -->
+  <section class="comparison section-padding bg-gray-50 dark-bg-gray-800">
+    <div class="container">
+      <div class="section-header text-center">
+        <h2 class="section-title">Konvert vs. Others</h2>
+        <p class="section-subtitle">See how we stack up against traditional web converters.</p>
+      </div>
+
+      <div class="comparison-table-wrapper reveal">
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th class="highlight-col">Konvert App</th>
+              <th>Web Converters</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Images (Privacy)</td>
+              <td class="highlight-col">100% Offline (On-Device)</td>
+              <td>Upload to Server</td>
+            </tr>
+            <tr>
+              <td>Documents (Docs/PPT)</td>
+              <td class="highlight-col">Secure Cloud (Auto-Delete)</td>
+              <td>Unknown Retention</td>
+            </tr>
+            <tr>
+              <td>Security Scanning</td>
+              <td class="highlight-col"><i data-lucide="check-circle" class="text-emerald"></i> VirusTotal</td>
+              <td><i data-lucide="x-circle" class="text-red"></i> None</td>
+            </tr>
+            <tr>
+              <td>Speed</td>
+              <td class="highlight-col"><i data-lucide="zap" class="text-emerald"></i> Instant (Local)</td>
+              <td>Slow (Upload Dependent)</td>
+            </tr>
+            <tr>
+              <td>History</td>
+              <td class="highlight-col">Local Log (Private)</td>
+              <td>Lost after closing</td>
+            </tr>
+            <tr>
+              <td>Ads</td>
+              <td class="highlight-col">Ad-Free</td>
+              <td>Cluttered / Popups</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta relative overflow-hidden">
+    <div class="cta-bg absolute inset-0"></div>
+    <div class="container relative text-center text-white reveal">
+      <h2 class="cta-title">Ready to Convert Smarter?</h2>
+      <p class="cta-subtitle">Join thousands of users who trust Konvert for secure, private conversions.</p>
+
+      <div class="cta-buttons">
+        <a href="app-release.apk" class="btn btn-white" id="download-android-cta">
+          <i data-lucide="download"></i>
+          <span>Download for Android</span>
+        </a>
+        <button class="btn btn-dark-outline" onclick="alert('Coming soon!')">
+          <i data-lucide="download"></i>
+          <span>Download for Windows</span>
+        </button>
+      </div>
+
+      <div class="cta-badges">
+        <div class="badge-sm">No Credit Card Required</div>
+        <div class="badge-sm">Free Forever</div>
+        <div class="badge-sm">Guest Mode</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <i data-lucide="zap" class="text-emerald"></i>
+          <span class="footer-logo-text">Konvert</span>
+        </div>
+        <p class="footer-copy">&copy; 2026 Konvert. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
