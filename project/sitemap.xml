@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset
+  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+
   <url>
     <loc>https://konvert-website.vercel.app/</loc>
-    <lastmod>2026-02-22</lastmod>
+    <lastmod>2026-03-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+    <image:image>
+      <image:loc>https://konvert-website.vercel.app/readme_icon.png</image:loc>
+      <image:title>Konvert - Free File Converter &amp; Compressor App</image:title>
+      <image:caption>Konvert: Convert and compress files locally with privacy-first hybrid cloud support for Android and Windows.</image:caption>
+    </image:image>
   </url>
+
 </urlset>

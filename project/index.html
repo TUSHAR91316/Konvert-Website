@@ -6,13 +6,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Konvert - Advanced File Management & Conversion Tool</title>
   <meta name="description"
-    content="Process files locally on your device with hybrid cloud support. Privacy-first, security-focused, and lightning fast." />
+    content="Konvert is a free file converter and image compressor app for Android & Windows. Convert PDF, DOCX, JPG, PNG, MP4 and more locally on your device. Privacy-first, no uploads, lightning fast." />
 
   <!-- SEO & Indexing -->
   <meta name="keywords"
-    content="file converter, document converter, local file processing, secure file conversion, privacy-first converter, hybrid cloud, image compression, offline converter" />
+    content="file converter, free file converter, image compressor, PDF converter, DOCX to PDF, JPG to PNG, image to PDF, compress image, reduce file size, offline file converter, document converter, video converter, local file converter, secure converter, privacy file converter, Android file converter, Windows file converter, batch file converter, compress PDF, image converter app" />
   <meta name="robots" content="index, follow" />
   <meta name="author" content="Konvert" />
+  <meta name="theme-color" content="#10b981" />
   <link rel="canonical" href="https://konvert-website.vercel.app/" />
   <link rel="icon" type="image/png" href="readme_icon.png" />
 
@@ -22,15 +23,17 @@
   <meta property="og:url" content="https://konvert-website.vercel.app/" />
   <meta property="og:title" content="Konvert - Advanced File Management & Conversion Tool" />
   <meta property="og:description"
-    content="Process files locally on your device with hybrid cloud support. Privacy-first, security-focused, and lightning fast." />
+    content="Convert PDF, DOCX, JPG, PNG and more files locally on your device. Free file converter and image compressor with privacy-first, no-upload processing." />
   <meta property="og:image" content="https://konvert-website.vercel.app/readme_icon.png" />
+  <meta property="og:site_name" content="Konvert" />
+  <meta property="og:locale" content="en_US" />
 
   <!-- Twitter -->
   <meta property="twitter:card" content="summary_large_image" />
   <meta property="twitter:url" content="https://konvert-website.vercel.app/" />
   <meta property="twitter:title" content="Konvert - Advanced File Management & Conversion Tool" />
   <meta property="twitter:description"
-    content="Process files locally on your device with hybrid cloud support. Privacy-first, security-focused, and lightning fast." />
+    content="Convert PDF, DOCX, JPG, PNG and more files locally on your device. Free file converter and image compressor with privacy-first, no-upload processing." />
   <meta property="twitter:image" content="https://konvert-website.vercel.app/readme_icon.png" />
 
   <!-- JSON-LD Structured Data Schema Markup -->
@@ -42,14 +45,36 @@
           "@type": "WebSite",
           "name": "Konvert",
           "url": "https://konvert-website.vercel.app/",
-          "description": "Advanced File Management & Conversion Tool. Process files locally with privacy-first and security-focused hybrid cloud support."
+          "description": "Free file converter and image compressor app for Android and Windows. Convert PDF, DOCX, JPG, PNG, and more locally with privacy-first processing.",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://konvert-website.vercel.app/?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
         },
         {
           "@type": "SoftwareApplication",
-          "name": "Konvert Apps",
+          "name": "Konvert - File Converter & Compressor",
           "operatingSystem": "Android, Windows",
           "applicationCategory": "UtilitiesApplication",
-          "description": "Secure, fast, local and hybrid cloud file conversion tool.",
+          "applicationSubCategory": "File Converter, Image Compressor, Document Converter, PDF Converter",
+          "description": "Konvert is a free, privacy-first file converter and image compressor. Convert PDF, DOCX, JPG, PNG, MP4 and compress images locally on your Android or Windows device — no file uploads, no ads.",
+          "url": "https://konvert-website.vercel.app/",
+          "downloadUrl": "https://github.com/TUSHAR91316/Konvert-Website/releases",
+          "featureList": [
+            "Convert PDF to DOCX",
+            "Convert DOCX to PDF",
+            "Convert JPG to PNG",
+            "Convert PNG to JPG",
+            "Convert images to PDF",
+            "Compress images with quality control",
+            "Compress images to target file size",
+            "Compress PDF files",
+            "Batch file conversion",
+            "Offline local file conversion",
+            "VirusTotal malware scanning",
+            "Conversion history tracking"
+          ],
           "offers": {
             "@type": "Offer",
             "price": "0",
@@ -60,6 +85,35 @@
             "ratingValue": "4.9",
             "ratingCount": "1024"
           }
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "What file formats can Konvert convert?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Konvert supports conversion between PDF, DOCX, DOC, PPTX, JPG, PNG, WEBP, MP4, and many more formats."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Is Konvert a free file converter?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes, Konvert is completely free with no ads and no credit card required. Download it for Android or Windows."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Does Konvert upload my files to a server?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "For images, Konvert processes files 100% locally on your device. Documents using cloud features are auto-deleted immediately after conversion."
+              }
+            }
+          ]
         }
       ]
     }
@@ -93,7 +147,7 @@
         </div>
 
         <h1 class="hero-title">Konvert</h1>
-        <p class="hero-subtitle">Advanced File Management & Conversion Tool</p>
+        <p class="hero-subtitle">Advanced File Management &amp; Conversion Tool</p>
         <p class="hero-desc">
           Process files locally on your device with hybrid cloud support.
           <span class="highlight-emerald">Privacy-first</span>,
@@ -149,8 +203,7 @@
             <i data-lucide="refresh-cw"></i>
           </div>
           <h3>Smart File Conversion</h3>
-          <p>Hybrid Engine: Automatically chooses the best way (Local or Cloud) to convert your file based on format.
-          </p>
+          <p>Hybrid Engine: Automatically chooses the best way (Local or Cloud) to convert your file based on format.</p>
         </div>
         <!-- Feature 2 -->
         <div class="feature-card reveal" style="transition-delay: 0.1s">
