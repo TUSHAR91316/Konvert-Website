@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Konvert 101: Complete Setup & Self-Hosting Guide</title>
+  <meta name="description"
+    content="Complete self-hosting guide for Konvert. Learn how to set up your own personal Docker backend for secure document processing." />
+
+  <!-- SEO & Indexing -->
+  <meta name="robots" content="index, follow" />
+  <meta name="author" content="Konvert" />
+  <meta name="theme-color" content="#10b981" />
+  <link rel="canonical" href="https://konvert-website.vercel.app/self-hosting.html" />
+  <link rel="icon" type="image/png" href="readme_icon.png" />
+
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:;">
+  <link rel="stylesheet" href="style.css" />
+  
+  <style>
+    .privacy-container {
+      max-width: 800px;
+      margin: 8rem auto 4rem;
+      padding: 2.5rem;
+      background: var(--card-bg);
+      border: var(--glass-border);
+      border-radius: 1rem;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+    .privacy-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    .privacy-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      background: var(--primary-gradient);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+    .privacy-subtitle {
+      color: var(--text-muted);
+      font-size: 1.125rem;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .privacy-content h2 {
+      font-size: 1.5rem;
+      color: var(--text-main);
+      margin-top: 2.5rem;
+      margin-bottom: 1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .privacy-content p {
+      color: var(--text-muted);
+      margin-bottom: 1.25rem;
+      line-height: 1.7;
+    }
+    .privacy-content ul, .privacy-content ol {
+      margin-left: 1.5rem;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+    }
+    .privacy-content li {
+      margin-bottom: 0.75rem;
+      line-height: 1.6;
+    }
+    .privacy-content a {
+      color: var(--emerald-500);
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 2px;
+    }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--emerald-500);
+      text-decoration: none;
+      font-weight: 600;
+      margin-bottom: 2rem;
+      transition: opacity 0.3s;
+    }
+    .back-link:hover {
+      opacity: 0.8;
+    }
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      margin-bottom: 0.5rem;
+    }
+    .footer-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color 0.3s;
+    }
+    .footer-links a:hover {
+      color: var(--emerald-500);
+    }
+    
+    /* Code Blocks */
+    pre {
+      background: #1f2937;
+      color: #f3f4f6;
+      padding: 1rem 1.25rem;
+      border-radius: 0.75rem;
+      overflow-x: auto;
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.9em;
+    }
+    p code, li code {
+      background: rgba(128, 128, 128, 0.15);
+      padding: 0.125rem 0.375rem;
+      border-radius: 0.25rem;
+      color: var(--emerald-600);
+    }
+    [data-theme="dark"] p code, [data-theme="dark"] li code {
+      color: var(--emerald-400);
+    }
+    
+    /* Alerts */
+    .alert-success {
+      background: rgba(16, 185, 129, 0.1);
+      border-left: 4px solid var(--emerald-500);
+      padding: 1rem 1.25rem;
+      border-radius: 0 0.5rem 0.5rem 0;
+      margin: 1.5rem 0;
+      color: var(--text-main);
+    }
+    .alert-info {
+      background: rgba(6, 182, 212, 0.1);
+      border-left: 4px solid var(--cyan-500);
+      padding: 1rem 1.25rem;
+      border-radius: 0 0.5rem 0.5rem 0;
+      margin: 1.5rem 0;
+      color: var(--text-main);
+    }
+  </style>
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest" defer></script>
+</head>
+
+<body>
+  <!-- Theme Toggle -->
+  <button id="theme-toggle" aria-label="Toggle theme">
+    <span id="moon-wrapper"><i data-lucide="moon"></i></span>
+    <span id="sun-wrapper" style="display: none;"><i data-lucide="sun"></i></span>
+  </button>
+
+  <main class="container">
+    <div class="privacy-container reveal">
+      <a href="index.html" class="back-link">
+        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+        Back to Home
+      </a>
+      
+      <div class="privacy-header">
+        <h1 class="privacy-title">Konvert 101: Complete Setup & Self-Hosting Guide <span style="display:inline-block; animation: bounce 2s infinite;">🚀</span></h1>
+        <p class="privacy-subtitle">Because we take user privacy seriously, we don't rely on centralized cloud servers for document processing. Instead, <strong>you</strong> play the role of the cloud provider.</p>
+      </div>
+
+      <div class="privacy-content">
+        <p>By following this guide, you will set up a local backend server on your computer that your mobile app will securely talk to. Your documents never leave your control, and everything is instantly deleted after processing.</p>
+        <p><em>Let's get everything set up in less than 10 minutes!</em></p>
+        
+        <hr style="border: 0; height: 1px; background: var(--border-color); margin: 2rem 0;">
+
+        <h2>🛠️ Prerequisites</h2>
+        <p>Before we start, verify that you have the following installed on your computer:</p>
+        <ol>
+          <li><strong>Docker Desktop</strong> (<a href="https://www.docker.com/products/docker-desktop/" target="_blank">Download here</a>) - Required to run the LibreOffice backend container.</li>
+          <li><strong>ngrok</strong> (<a href="https://ngrok.com/download" target="_blank">Download here</a>) - Required to securely connect your phone to your computer.</li>
+        </ol>
+
+        <hr style="border: 0; height: 1px; background: var(--border-color); margin: 2rem 0;">
+
+        <h2>Step 1: Setting up the Local Backend</h2>
+        <p>Our backend service handles complex document conversions (like DOCX, PPTX, or XLSX formats). We have containerized it to ensure it runs fully offline and isolated on your machine.</p>
+        
+        <ol>
+          <li><p><strong>Download the Backend Files</strong>:<br>
+          Because the Konvert mobile app is closed-source, you cannot track or <code>git clone</code> the source code. Instead, go to the <a href="https://github.com/TUSHAR91316/Konvert-Website/releases" target="_blank">Konvert Releases Page</a> and download the <strong><code>backend.zip</code></strong> file. Extract it, and open your Terminal / Command Prompt inside that extracted folder.</p></li>
+          
+          <li><p><strong>Build the Backend Container</strong>:<br>
+          This command downloads all necessary tools (Python + FastAPI + LibreOffice) to process your files securely.</p>
+          <pre><code>docker build -t converter-backend .</code></pre></li>
+          
+          <li><p><strong>Run your Server</strong>:<br>
+          Start the backend so it listens for requests on port 8080.</p>
+          <pre><code>docker run -d -p 8080:8080 converter-backend</code></pre>
+          <div class="alert-success">
+             🎉 <strong>Success:</strong> Your backend is now running locally! But right now, your phone can't see it. Let's fix that.
+          </div></li>
+        </ol>
+
+        <hr style="border: 0; height: 1px; background: var(--border-color); margin: 2rem 0;">
+
+        <h2>Step 2: Going Global with ngrok</h2>
+        <p>We need to safely expose your local port <code>8080</code> to the internet so that your mobile app can access it from anywhere using Wi-Fi or Cellular data. We use <strong>ngrok</strong> for this.</p>
+        <ol>
+          <li>Sign up for a free <a href="https://dashboard.ngrok.com/" target="_blank">ngrok account</a>.</li>
+          <li>Authenticate your terminal using the token provided on the dashboard:
+          <pre><code>ngrok config add-authtoken &lt;your-auth-token&gt;</code></pre></li>
+          <li>Locate your <strong>Free Static Domain</strong> in the ngrok dashboard (e.g., <code>cute-dog-123.ngrok-free.app</code>). This domain is yours permanently!</li>
+          <li><strong>Start the tunnel:</strong>
+          <pre><code>ngrok http --domain=cute-dog-123.ngrok-free.app 8080</code></pre>
+          <p><em>Tip (Run & Forget): If you use a personal Windows device, you can run ngrok silently by creating a <code>.bat</code> script:</em></p>
+          <pre><code>@ECHO OFF
+Start-Process ngrok -ArgumentList "http --domain=cute-dog-123.ngrok-free.app 8080" -WindowStyle Hidden</code></pre>
+          <p>By using this <code>.bat</code> file, ngrok runs completely in the background—you can run it and forget it!<br>
+          <em>(Note: If you didn't use the <code>.bat</code> file and manually ran the <code>ngrok http</code> command in your terminal, you must leave that terminal window open).</em></p></li>
+        </ol>
+
+        <hr style="border: 0; height: 1px; background: var(--border-color); margin: 2rem 0;">
+
+        <h2>Step 3: Configuring the Mobile App</h2>
+        <p>Now that your personal cloud is running securely on the internet, you just need to point the Konvert app to it.</p>
+        <ol>
+          <li><p><strong>Install Konvert:</strong><br>
+          Download the latest APK from the <a href="https://github.com/TUSHAR91316/Konvert-Website/releases" target="_blank">GitHub Releases</a> tab.</p></li>
+          <li><p><strong>Open the Settings Screen:</strong><br>
+          Inside the Konvert application, find and tap on the "Settings" or "Configuration" wheel.</p></li>
+          <li><p><strong>Paste your Domain:</strong><br>
+          Look for the <strong>Backend URL</strong> field. Paste the static URL you got from ngrok. It should look like this: <code>https://cute-dog-123.ngrok-free.app</code>.</p></li>
+          <li><p><strong>Convert Safely!</strong><br>
+          You're finished! Now whenever you convert a proprietary office document, your phone will securely send it to your <code>ngrok</code> tunnel, which routes it directly to the <code>Docker</code> container running on your laptop. Once done, the server immediately wipes the file data.</p></li>
+        </ol>
+
+        <hr style="border: 0; height: 1px; background: var(--border-color); margin: 2rem 0;">
+
+        <h2>🙋 Frequently Asked Questions</h2>
+        
+        <p><strong>Does Image-to-PDF conversion require the backend?</strong><br>
+        No! Image conversions (JPG, PNG to PDF) are 100% processed completely offline using your phone's processor. You only need to run the Docker backend when processing heavy documents like Word or Excel files.</p>
+        
+        <p><strong>Do I have to do this every time?</strong><br>
+        You only have to install Docker and claim the ngrok domain once! For daily usage, simply open terminal and run:<br>
+        <code>docker run -d -p 8080:8080 converter-backend</code> and your <code>ngrok http ...</code> command whenever you need it.</p>
+        
+        <p><strong>Is it really secure?</strong></p>
+        <div class="alert-info">
+             💡 <strong>Yes!</strong> ngrok provides industry-standard SSL encryption (HTTPS). Additionally, because you host the container yourself, you aren't uploading your private resumés or documents to a random third-party internet converter that might harvest your private data.
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-body">
+        <div class="footer-brand">
+          <i data-lucide="zap" class="text-emerald"></i>
+          <span class="footer-logo-text">Konvert</span>
+        </div>
+        <div class="footer-links">
+          <a href="privacy-policy.html">Privacy Policy</a>
+          <a href="self-hosting.html">Self-Hosting Guide</a>
+        </div>
+        <p class="footer-copy">&copy; 2026 Konvert. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js" defer></script>
+</body>
+
+</html>
