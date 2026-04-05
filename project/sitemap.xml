@@ -14,5 +14,11 @@
       <image:caption>Konvert: Convert and compress files locally with privacy-first hybrid cloud support for Android and Windows.</image:caption>
     </image:image>
   </url>
+  <url>
+    <loc>https://konvert-website.vercel.app/privacy-policy.html</loc>
+    <lastmod>2026-04-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
 
 </urlset>
