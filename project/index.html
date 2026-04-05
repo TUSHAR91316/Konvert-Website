@@ -161,7 +161,7 @@
             <i data-lucide="download"></i>
             <span>Download for Android</span>
           </a>
-          <button class="btn btn-secondary" onclick="alert('Coming soon!')">
+          <button class="btn btn-secondary" onclick="openModal()">
             <div class="btn-glow"></div>
             <i data-lucide="download"></i>
             <span>Download for Windows</span>
@@ -318,7 +318,7 @@
           <i data-lucide="download"></i>
           <span>Download for Android</span>
         </a>
-        <button class="btn btn-dark-outline" onclick="alert('Coming soon!')">
+        <button class="btn btn-dark-outline" onclick="openModal()">
           <i data-lucide="download"></i>
           <span>Download for Windows</span>
         </button>
@@ -347,6 +347,19 @@
       </div>
     </div>
   </footer>
+
+  <!-- Coming Soon Modal -->
+  <div id="coming-soon-modal" class="modal-overlay">
+    <div class="modal-content">
+      <button class="modal-close" aria-label="Close modal"><i data-lucide="x"></i></button>
+      <div class="modal-icon-wrapper">
+        <i data-lucide="monitor" class="text-cyan"></i>
+      </div>
+      <h3 class="modal-title">Windows Version</h3>
+      <p class="modal-desc">We are actively refining the native Windows desktop experience. It will be dropping soon with full Docker BYOB integration!</p>
+      <button class="btn btn-primary modal-close-btn">Got it!</button>
+    </div>
+  </div>
 
   <script src="script.js" defer></script>
 </body>

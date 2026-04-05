@@ -85,4 +85,39 @@ if (subtitleElement) {
     setTimeout(typeWriter, 500);
 }
 
+// Modal Logic
+function openModal() {
+    const modal = document.getElementById('coming-soon-modal');
+    if (modal) {
+        modal.classList.add('active');
+    }
+}
 
+function closeModal() {
+    const modal = document.getElementById('coming-soon-modal');
+    if (modal) {
+        modal.classList.remove('active');
+    }
+}
+
+// Setup click listeners for close buttons and outside click
+document.addEventListener('DOMContentLoaded', () => {
+    const closeBtns = document.querySelectorAll('.modal-close, .modal-close-btn');
+    closeBtns.forEach(btn => {
+        btn.addEventListener('click', closeModal);
+    });
+
+    window.addEventListener('click', (e) => {
+        const modal = document.getElementById('coming-soon-modal');
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+
+    // Handle Escape key to close modal
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closeModal();
+        }
+    });
+});
