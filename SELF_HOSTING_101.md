@@ -58,7 +58,7 @@ We need to safely expose your local port `8080` to the internet so that your mob
    ```
    By using this `.bat` file, ngrok runs completely in the background—you can run it and forget it! 
    
-   *(Note: If you didn't use the `.bat` file and manually ran the `ngrok http` command in your terminal, you must leave that terminal window open).*
+   *(Note: If the `.bat` script does not work on your machine or you prefer manual control, simply use the `ngrok http` command in your terminal. You must leave that terminal window open if you do so).*
 
 ---
 
