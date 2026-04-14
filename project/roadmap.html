@@ -19,7 +19,8 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://konvert-website.vercel.app/roadmap" />
   <meta property="og:title" content="Konvert Roadmap & Releases — Version History" />
-  <meta property="og:description" content="Explore every Konvert release — changelogs, new features, and fixes pulled live from GitHub." />
+  <meta property="og:description"
+    content="Explore every Konvert release — changelogs, new features, and fixes pulled live from GitHub." />
   <meta property="og:image" content="https://konvert-website.vercel.app/readme_icon.png" />
   <meta property="og:site_name" content="Konvert" />
 
@@ -39,7 +40,10 @@
       position: relative;
       overflow: hidden;
     }
-    .roadmap-hero .blob { opacity: 0.35; }
+
+    .roadmap-hero .blob {
+      opacity: 0.35;
+    }
 
     .roadmap-hero-title {
       font-size: clamp(2rem, 5vw, 3.25rem);
@@ -51,12 +55,14 @@
       margin-bottom: 0.75rem;
       line-height: 1.2;
     }
+
     .roadmap-hero-sub {
       color: var(--text-muted);
       font-size: 1.1rem;
       max-width: 540px;
       margin: 0 auto 2rem;
     }
+
     .live-badge {
       display: inline-flex;
       align-items: center;
@@ -70,6 +76,7 @@
       border-radius: 999px;
       margin-bottom: 1.5rem;
     }
+
     .live-dot {
       width: 7px;
       height: 7px;
@@ -77,21 +84,33 @@
       background: var(--emerald-500);
       animation: pulse-dot 1.8s ease-in-out infinite;
     }
+
     @keyframes pulse-dot {
-      0%, 100% { opacity: 1; transform: scale(1); }
-      50%       { opacity: 0.4; transform: scale(0.7); }
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.4;
+        transform: scale(0.7);
+      }
     }
 
     /* ─── Timeline wrapper ────────────────────────────── */
     .timeline-section {
       padding: 0 0 6rem;
     }
+
     .timeline {
       position: relative;
       max-width: 820px;
       margin: 0 auto;
       padding: 0 1.5rem;
     }
+
     /* Vertical spine */
     .timeline::before {
       content: '';
@@ -101,10 +120,10 @@
       bottom: 0;
       width: 2px;
       background: linear-gradient(to bottom,
-        transparent 0%,
-        rgba(16,185,129,0.5) 5%,
-        rgba(16,185,129,0.25) 90%,
-        transparent 100%);
+          transparent 0%,
+          rgba(16, 185, 129, 0.5) 5%,
+          rgba(16, 185, 129, 0.25) 90%,
+          transparent 100%);
     }
 
     /* ─── Individual Release Card ─────────────────────── */
@@ -117,6 +136,7 @@
       transform: translateY(24px);
       transition: opacity 0.5s ease, transform 0.5s ease;
     }
+
     .release-item.visible {
       opacity: 1;
       transform: translateY(0);
@@ -138,14 +158,31 @@
       box-shadow: 0 0 0 4px var(--bg-main);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
+
     .release-item:hover .release-node {
       transform: scale(1.12);
-      box-shadow: 0 0 0 4px var(--bg-main), 0 0 20px rgba(16,185,129,0.4);
+      box-shadow: 0 0 0 4px var(--bg-main), 0 0 20px rgba(16, 185, 129, 0.4);
     }
-    .release-node.latest  { background: var(--primary-gradient); color: #fff; }
-    .release-node.stable  { background: linear-gradient(135deg, #06b6d4, #0891b2); color: #fff; }
-    .release-node.patch   { background: linear-gradient(135deg, #8b5cf6, #6d28d9); color: #fff; }
-    .release-node.old     { background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; }
+
+    .release-node.latest {
+      background: var(--primary-gradient);
+      color: #fff;
+    }
+
+    .release-node.stable {
+      background: linear-gradient(135deg, #06b6d4, #0891b2);
+      color: #fff;
+    }
+
+    .release-node.patch {
+      background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+      color: #fff;
+    }
+
+    .release-node.old {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: #fff;
+    }
 
     /* Card body */
     .release-card {
@@ -159,9 +196,10 @@
       -webkit-backdrop-filter: blur(8px);
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
+
     .release-card:hover {
       transform: translateY(-3px);
-      box-shadow: 0 12px 40px rgba(0,0,0,0.18);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
     }
 
     .release-header {
@@ -172,12 +210,14 @@
       gap: 0.75rem;
       margin-bottom: 1rem;
     }
+
     .release-tag-group {
       display: flex;
       align-items: center;
       gap: 0.6rem;
       flex-wrap: wrap;
     }
+
     .release-tag {
       font-size: 0.75rem;
       font-weight: 700;
@@ -186,10 +226,30 @@
       text-transform: uppercase;
       letter-spacing: 0.04em;
     }
-    .tag-latest  { background: rgba(16,185,129,0.15); color: var(--emerald-500); border: 1px solid rgba(16,185,129,0.3); }
-    .tag-stable  { background: rgba(6,182,212,0.12); color: var(--cyan-500); border: 1px solid rgba(6,182,212,0.25); }
-    .tag-patch   { background: rgba(139,92,246,0.12); color: #a78bfa; border: 1px solid rgba(139,92,246,0.3); }
-    .tag-prerel  { background: rgba(245,158,11,0.12); color: #f59e0b; border: 1px solid rgba(245,158,11,0.3); }
+
+    .tag-latest {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--emerald-500);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .tag-stable {
+      background: rgba(6, 182, 212, 0.12);
+      color: var(--cyan-500);
+      border: 1px solid rgba(6, 182, 212, 0.25);
+    }
+
+    .tag-patch {
+      background: rgba(139, 92, 246, 0.12);
+      color: #a78bfa;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+    }
+
+    .tag-prerel {
+      background: rgba(245, 158, 11, 0.12);
+      color: #f59e0b;
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
 
     .release-name {
       font-size: 1.15rem;
@@ -198,6 +258,7 @@
       margin: 0;
       line-height: 1.35;
     }
+
     .release-meta {
       display: flex;
       align-items: center;
@@ -220,29 +281,56 @@
       font-size: 0.92rem;
       line-height: 1.7;
     }
-    .release-body h1, .release-body h2, .release-body h3 {
+
+    .release-body h1,
+    .release-body h2,
+    .release-body h3 {
       color: var(--text-main);
       font-weight: 700;
       margin: 1.1rem 0 0.5rem;
     }
-    .release-body h1 { font-size: 1.25rem; }
-    .release-body h2 { font-size: 1.05rem; }
-    .release-body h3 { font-size: 0.97rem; color: var(--text-muted); }
-    .release-body p  { margin-bottom: 0.75rem; }
-    .release-body ul, .release-body ol {
+
+    .release-body h1 {
+      font-size: 1.25rem;
+    }
+
+    .release-body h2 {
+      font-size: 1.05rem;
+    }
+
+    .release-body h3 {
+      font-size: 0.97rem;
+      color: var(--text-muted);
+    }
+
+    .release-body p {
+      margin-bottom: 0.75rem;
+    }
+
+    .release-body ul,
+    .release-body ol {
       margin-left: 1.4rem;
       margin-bottom: 0.75rem;
     }
-    .release-body li { margin-bottom: 0.35rem; }
-    .release-body strong { color: var(--text-main); font-weight: 600; }
+
+    .release-body li {
+      margin-bottom: 0.35rem;
+    }
+
+    .release-body strong {
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
     .release-body code {
-      background: rgba(128,128,128,0.13);
+      background: rgba(128, 128, 128, 0.13);
       padding: 0.1rem 0.35rem;
       border-radius: 0.25rem;
       font-family: ui-monospace, monospace;
       font-size: 0.85em;
       color: var(--emerald-500);
     }
+
     .release-body pre {
       background: #1f2937;
       color: #f3f4f6;
@@ -251,13 +339,19 @@
       overflow-x: auto;
       margin-bottom: 0.75rem;
     }
-    .release-body pre code { background: none; color: inherit; }
+
+    .release-body pre code {
+      background: none;
+      color: inherit;
+    }
+
     .release-body hr {
       border: 0;
       height: 1px;
       background: var(--border-color);
       margin: 1rem 0;
     }
+
     .release-body a {
       color: var(--emerald-500);
       text-decoration: underline;
@@ -269,18 +363,23 @@
     .body-wrapper {
       position: relative;
     }
+
     .body-wrapper.collapsed .release-body {
       max-height: 180px;
       overflow: hidden;
     }
+
     .body-wrapper.collapsed::after {
       content: '';
       position: absolute;
-      bottom: 0; left: 0; right: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
       height: 60px;
       background: linear-gradient(transparent, var(--card-bg));
       pointer-events: none;
     }
+
     .toggle-body-btn {
       background: none;
       border: none;
@@ -295,7 +394,10 @@
       margin-top: 0.4rem;
       transition: opacity 0.2s;
     }
-    .toggle-body-btn:hover { opacity: 0.75; }
+
+    .toggle-body-btn:hover {
+      opacity: 0.75;
+    }
 
     /* Footer row of card */
     .release-footer {
@@ -305,6 +407,7 @@
       gap: 0.75rem;
       flex-wrap: wrap;
     }
+
     .release-dl-btn {
       display: inline-flex;
       align-items: center;
@@ -318,13 +421,21 @@
       text-decoration: none;
       transition: opacity 0.2s, transform 0.2s;
     }
-    .release-dl-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+
+    .release-dl-btn:hover {
+      opacity: 0.88;
+      transform: translateY(-1px);
+    }
+
     .release-dl-btn.secondary {
-      background: rgba(128,128,128,0.12);
+      background: rgba(128, 128, 128, 0.12);
       border: 1px solid var(--border-color);
       color: var(--text-muted);
     }
-    .release-dl-btn.secondary:hover { color: var(--text-main); }
+
+    .release-dl-btn.secondary:hover {
+      color: var(--text-main);
+    }
 
     /* ─── Loader & Error ──────────────────────────────── */
     .loader-wrapper {
@@ -332,15 +443,22 @@
       padding: 5rem 1rem;
       color: var(--text-muted);
     }
+
     .spinner {
-      width: 48px; height: 48px;
-      border: 3px solid rgba(16,185,129,0.2);
+      width: 48px;
+      height: 48px;
+      border: 3px solid rgba(16, 185, 129, 0.2);
       border-top-color: var(--emerald-500);
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
       margin: 0 auto 1.25rem;
     }
-    @keyframes spin { to { transform: rotate(360deg); } }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
 
     .error-box {
       max-width: 460px;
@@ -351,8 +469,19 @@
       border: var(--glass-border);
       border-radius: 1rem;
     }
-    .error-box svg { color: #f87171; margin-bottom: 1rem; width: 40px; height: 40px; }
-    .error-box p { color: var(--text-muted); font-size: 0.9rem; }
+
+    .error-box svg {
+      color: #f87171;
+      margin-bottom: 1rem;
+      width: 40px;
+      height: 40px;
+    }
+
+    .error-box p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+
     .retry-btn {
       margin-top: 1.25rem;
       display: inline-flex;
@@ -368,7 +497,10 @@
       font-size: 0.875rem;
       transition: opacity 0.2s;
     }
-    .retry-btn:hover { opacity: 0.85; }
+
+    .retry-btn:hover {
+      opacity: 0.85;
+    }
 
     /* ─── Back / footer links ─────────────────────────── */
     .back-link {
@@ -381,7 +513,10 @@
       margin-bottom: 2.5rem;
       transition: opacity 0.3s;
     }
-    .back-link:hover { opacity: 0.8; }
+
+    .back-link:hover {
+      opacity: 0.8;
+    }
 
     .footer-links {
       display: flex;
@@ -389,13 +524,17 @@
       justify-content: center;
       margin-bottom: 0.5rem;
     }
+
     .footer-links a {
       color: var(--text-muted);
       text-decoration: none;
       font-size: 0.875rem;
       transition: color 0.3s;
     }
-    .footer-links a:hover { color: var(--emerald-500); }
+
+    .footer-links a:hover {
+      color: var(--emerald-500);
+    }
 
     /* ─── Stats bar ───────────────────────────────────── */
     .stats-bar {
@@ -406,9 +545,11 @@
       margin: 0 auto 3rem;
       max-width: 480px;
     }
+
     .stat-item {
       text-align: center;
     }
+
     .stat-value {
       font-size: 1.75rem;
       font-weight: 800;
@@ -417,6 +558,7 @@
       background-clip: text;
       color: transparent;
     }
+
     .stat-label {
       font-size: 0.78rem;
       color: var(--text-muted);
@@ -444,7 +586,8 @@
         Live from GitHub Releases
       </div>
       <h1 class="roadmap-hero-title">Konvert Roadmap &amp; Releases</h1>
-      <p class="roadmap-hero-sub">Every version, every changelog — pulled automatically from GitHub. See what's shipped and what's next.</p>
+      <p class="roadmap-hero-sub">Every version, every changelog — pulled automatically from GitHub. See what's shipped
+        and what's next.</p>
 
       <!-- Stats populated by JS -->
       <div class="stats-bar" id="stats-bar" style="display:none;">
@@ -567,8 +710,8 @@
     function tagHTML(index, prerelease) {
       const tags = [];
       if (index === 0 && !prerelease) tags.push('<span class="release-tag tag-latest">Latest</span>');
-      if (prerelease)                  tags.push('<span class="release-tag tag-prerel">Pre-release</span>');
-      else if (index > 0)              tags.push('<span class="release-tag tag-stable">Stable</span>');
+      if (prerelease) tags.push('<span class="release-tag tag-prerel">Pre-release</span>');
+      else if (index > 0) tags.push('<span class="release-tag tag-stable">Stable</span>');
       return tags.join('');
     }
 
@@ -577,7 +720,7 @@
     // ──────────────────────────────────────────────────────────────
     async function loadReleases() {
       const container = document.getElementById('timeline-container');
-      const loader    = document.getElementById('releases-loader');
+      const loader = document.getElementById('releases-loader');
 
       try {
         const res = await fetch(
@@ -591,8 +734,8 @@
         const totalDownloads = releases.reduce((sum, r) =>
           sum + r.assets.reduce((s, a) => s + a.download_count, 0), 0);
 
-        document.getElementById('stat-versions').textContent  = releases.length;
-        document.getElementById('stat-latest').textContent    = releases[0]?.tag_name ?? '—';
+        document.getElementById('stat-versions').textContent = releases.length;
+        document.getElementById('stat-latest').textContent = releases[0]?.tag_name ?? '—';
         document.getElementById('stat-downloads').textContent =
           totalDownloads >= 1000
             ? (totalDownloads / 1000).toFixed(1) + 'k'
@@ -613,7 +756,7 @@
         releases.forEach((release, idx) => {
           const apkAsset = release.assets.find(a => a.name.endsWith('.apk') && !a.name.endsWith('.sha1'));
           const zipAsset = release.assets.find(a => a.name.endsWith('.zip'));
-          const nClass   = nodeClass(idx, release.prerelease);
+          const nClass = nodeClass(idx, release.prerelease);
 
           const item = document.createElement('div');
           item.className = 'release-item';
@@ -639,17 +782,17 @@
           </a>`;
 
           // Body: collapse if > 400 chars
-          const bodyHTML   = parseMarkdown(release.body);
-          const isLong     = (release.body || '').length > 400;
-          const bodyClass  = isLong ? 'body-wrapper collapsed' : 'body-wrapper';
-          const toggleBtn  = isLong
+          const bodyHTML = parseMarkdown(release.body);
+          const isLong = (release.body || '').length > 400;
+          const bodyClass = isLong ? 'body-wrapper collapsed' : 'body-wrapper';
+          const toggleBtn = isLong
             ? `<button class="toggle-body-btn" onclick="toggleBody(this)" data-expanded="false">
                 <i data-lucide="chevron-down" style="width:14px;height:14px;"></i> Show more
               </button>`
             : '';
 
           item.innerHTML = `
-            <div class="release-node ${nClass}">${release.tag_name.replace(/[vV]/,'').split('.')[0]}</div>
+            <div class="release-node ${nClass}">${releases.length - idx}</div>
             <div class="release-card">
               <div class="release-header">
                 <div>
@@ -713,7 +856,7 @@
 
     // Toggle expand/collapse for long release bodies
     function toggleBody(btn) {
-      const wrapper  = btn.previousElementSibling;
+      const wrapper = btn.previousElementSibling;
       const expanded = btn.dataset.expanded === 'true';
       if (expanded) {
         wrapper.classList.add('collapsed');
