@@ -21,36 +21,22 @@ function setTheme(theme) {
         localStorage.setItem('theme', 'light');
     }
 }
-// Set initial state explicitly if needed
-if (!localStorage.getItem('theme') && !window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    setTheme('light');
-}
-
-// Scroll Reveal Observer
-const observerOptions = {
-    threshold: 0.1,
-    rootMargin: "0px"
-};
-
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-        }
-    });
-}, observerOptions);
-
-document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-
-
-
 
 // Check saved preference or system preference
 const savedTheme = localStorage.getItem('theme');
 if (savedTheme) {
     setTheme(savedTheme);
 } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    setTheme('dark');
+} else {
+    setTheme('light');
 }
+
+// Toggle Event Listener
+themeToggle.addEventListener('click', () => {
+    const currentTheme = htmlElement.getAttribute('data-theme');
+    setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+});
 
 // Toggle Event Listener
 themeToggle.addEventListener('click', () => {
