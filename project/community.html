@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Community Discussions - Konvert</title>
+    <meta name="description"
+        content="Join the Konvert community! Share feedback, ask questions, and discuss feature requests with other users and the development team." />
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="Konvert" />
+    <meta name="theme-color" content="#10b981" />
+    <link rel="canonical" href="https://konvert-website.vercel.app/community.html" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://konvert-website.vercel.app/community.html" />
+    <meta property="og:title" content="Community Discussions - Konvert" />
+    <meta property="og:description"
+        content="Join the Konvert community! Share feedback, ask questions, and discuss feature requests." />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary" />
+    <meta property="twitter:url" content="https://konvert-website.vercel.app/community.html" />
+    <meta property="twitter:title" content="Community Discussions - Konvert" />
+    <meta property="twitter:description"
+        content="Join the Konvert community! Share feedback, ask questions, and discuss feature requests." />
+
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://unpkg.com/lucide@latest" defer></script>
+    <style>
+        .community-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 3rem 1rem;
+        }
+
+        .community-hero {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fade-in 0.8s ease-out;
+        }
+
+        .community-hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .community-hero p {
+            font-size: 1.125rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+
+        .discussion-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .category-card {
+            background: var(--card-bg);
+            border: var(--glass-border);
+            border-radius: 12px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .category-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--emerald-500);
+            box-shadow: 0 12px 24px rgba(16, 185, 129, 0.15);
+        }
+
+        .category-card h3 {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            font-size: 1.25rem;
+        }
+
+        .category-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+        }
+
+        .category-icon {
+            width: 24px;
+            height: 24px;
+            color: var(--emerald-500);
+        }
+
+        .cta-section {
+            background: var(--primary-gradient);
+            border-radius: 12px;
+            padding: 3rem 2rem;
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+        }
+
+        .cta-section h2 {
+            font-size: 1.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .cta-section p {
+            font-size: 1.05rem;
+            margin-bottom: 2rem;
+            opacity: 0.95;
+        }
+
+        .btn-github {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            backdrop-filter: blur(8px);
+        }
+
+        .btn-github:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .guidelines-section {
+            background: var(--card-bg);
+            border: var(--glass-border);
+            border-radius: 12px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .guidelines-section h2 {
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .guidelines-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .guidelines-list li {
+            padding: 0.75rem 0;
+            padding-left: 1.75rem;
+            position: relative;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .guidelines-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--emerald-500);
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        @keyframes fade-in {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .community-hero h1 {
+                font-size: 2rem;
+            }
+
+            .cta-section {
+                padding: 2rem 1.5rem;
+            }
+
+            .cta-section h2 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Theme Toggle -->
+    <button id="theme-toggle" aria-label="Toggle theme">
+        <span id="moon-wrapper"><i data-lucide="moon"></i></span>
+        <span id="sun-wrapper" style="display: none;"><i data-lucide="sun"></i></span>
+    </button>
+
+    <main class="community-container">
+        <!-- Hero Section -->
+        <section class="community-hero">
+            <h1>Join Our Community</h1>
+            <p>
+                Connect with other Konvert users, share your feedback, ask questions, and help shape the future of
+                Konvert.
+                Our community is the heart of our development process.
+            </p>
+        </section>
+
+        <!-- Discussion Categories -->
+        <section class="discussion-categories">
+            <a href="https://github.com/TUSHAR91316/Konvert-Website/discussions/categories/announcements"
+                class="category-card" target="_blank" rel="noopener noreferrer">
+                <h3>
+                    <i data-lucide="bell" class="category-icon"></i>
+                    Announcements
+                </h3>
+                <p>Stay updated with the latest news, releases, and important updates from the Konvert team.</p>
+                <span style="color: var(--emerald-500); font-weight: 600; font-size: 0.9rem;">View →</span>
+            </a>
+
+            <a href="https://github.com/TUSHAR91316/Konvert-Website/discussions/categories/feature-requests"
+                class="category-card" target="_blank" rel="noopener noreferrer">
+                <h3>
+                    <i data-lucide="lightbulb" class="category-icon"></i>
+                    Feature Requests
+                </h3>
+                <p>Suggest new features and improvements. Vote on ideas you'd like to see in Konvert.</p>
+                <span style="color: var(--emerald-500); font-weight: 600; font-size: 0.9rem;">View →</span>
+            </a>
+
+            <a href="https://github.com/TUSHAR91316/Konvert-Website/discussions/categories/general"
+                class="category-card" target="_blank" rel="noopener noreferrer">
+                <h3>
+                    <i data-lucide="message-circle" class="category-icon"></i>
+                    General Discussion
+                </h3>
+                <p>General questions, feedback, and casual conversations about Konvert.</p>
+                <span style="color: var(--emerald-500); font-weight: 600; font-size: 0.9rem;">View →</span>
+            </a>
+
+            <a href="https://github.com/TUSHAR91316/Konvert-Website/discussions/categories/troubleshooting"
+                class="category-card" target="_blank" rel="noopener noreferrer">
+                <h3>
+                    <i data-lucide="wrench" class="category-icon"></i>
+                    Troubleshooting
+                </h3>
+                <p>Get help with issues and problems. Our community and team are here to assist.</p>
+                <span style="color: var(--emerald-500); font-weight: 600; font-size: 0.9rem;">View →</span>
+            </a>
+
+            <a href="https://github.com/TUSHAR91316/Konvert-Website/discussions/categories/show-and-tell"
+                class="category-card" target="_blank" rel="noopener noreferrer">
+                <h3>
+                    <i data-lucide="share-2" class="category-icon"></i>
+                    Show & Tell
+                </h3>
+                <p>Share your success stories, use cases, and creative ways you're using Konvert.</p>
+                <span style="color: var(--emerald-500); font-weight: 600; font-size: 0.9rem;">View →</span>
+            </a>
+
+            <a href="https://github.com/TUSHAR91316/Konvert-Website/discussions" class="category-card" target="_blank"
+                rel="noopener noreferrer">
+                <h3>
+                    <i data-lucide="github" class="category-icon"></i>
+                    All Discussions
+                </h3>
+                <p>Browse all community discussions on GitHub. Start a new topic or join an ongoing conversation.</p>
+                <span style="color: var(--emerald-500); font-weight: 600; font-size: 0.9rem;">View →</span>
+            </a>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta-section">
+            <h2>Ready to Join the Conversation?</h2>
+            <p>Share your thoughts, ask questions, and connect with the Konvert community on GitHub Discussions.</p>
+            <a href="https://github.com/TUSHAR91316/Konvert-Website/discussions" class="btn-github" target="_blank"
+                rel="noopener noreferrer">
+                <i data-lucide="github" style="width: 20px; height: 20px;"></i>
+                Start Discussing Now
+            </a>
+        </section>
+
+        <!-- Community Guidelines -->
+        <section class="guidelines-section">
+            <h2>Community Guidelines</h2>
+            <ul class="guidelines-list">
+                <li>Be respectful and constructive in all interactions</li>
+                <li>Search for existing discussions before posting to avoid duplicates</li>
+                <li>Provide clear and detailed information when describing issues</li>
+                <li>Share your positive experiences and use cases</li>
+                <li>Help others when you can—community support is invaluable</li>
+                <li>No spam, self-promotion, or off-topic discussions</li>
+                <li>Report inappropriate behavior to maintainers</li>
+            </ul>
+        </section>
+    </main>
+
+    <!-- Footer Links -->
+    <footer style="text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.9rem;">
+        <nav style="margin-bottom: 1rem;">
+            <a href="index.html" style="margin: 0 1rem; color: var(--text-main); text-decoration: none;">Home</a>
+            <a href="privacy-policy.html"
+                style="margin: 0 1rem; color: var(--text-main); text-decoration: none;">Privacy</a>
+            <a href="roadmap.html" style="margin: 0 1rem; color: var(--text-main); text-decoration: none;">Roadmap</a>
+            <a href="self-hosting.html"
+                style="margin: 0 1rem; color: var(--text-main); text-decoration: none;">Self-Hosting</a>
+        </nav>
+        <p>&copy; 2024 Konvert. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Theme Toggle Logic (same as main site)
+        const themeToggle = document.getElementById('theme-toggle');
+        const moonWrapper = document.getElementById('moon-wrapper');
+        const sunWrapper = document.getElementById('sun-wrapper');
+        const htmlElement = document.documentElement;
+
+        function setTheme(theme) {
+            if (theme === 'dark') {
+                htmlElement.setAttribute('data-theme', 'dark');
+                moonWrapper.style.display = 'none';
+                sunWrapper.style.display = 'block';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                htmlElement.setAttribute('data-theme', 'light');
+                moonWrapper.style.display = 'block';
+                sunWrapper.style.display = 'none';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            setTheme(savedTheme);
+        } else if (window.matchMedia('(prefers-color-color: dark)').matches) {
+            setTheme('dark');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = htmlElement.getAttribute('data-theme') || 'light';
+            setTheme(currentTheme === 'light' ? 'dark' : 'light');
+        });
+
+        // Initialize Lucide Icons
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>
