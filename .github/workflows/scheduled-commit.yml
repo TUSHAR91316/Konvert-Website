@@ -60,8 +60,9 @@ jobs:
         if: steps.verify-changes.outputs.has_changes == 'true'
         run: |
           git add README.md
+          git add project/faq.html
           git add docs/ 2>/dev/null || true
-          git commit -m "chore: automated update - README and docs rebuild [ci skip]"
+          git commit -m "chore: automated update - README, FAQ page, and docs rebuild [ci skip]"
           git push
 
       # Alternative: Force commit even if no changes
