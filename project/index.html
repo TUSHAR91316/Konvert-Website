@@ -439,44 +439,6 @@
   </div>
 
   <!-- JavaScript -->
-  <script src="script.js"></script>
-
-  <script>
-    // Modal Functions
-    function openModal() {
-      document.getElementById('downloadModal').classList.add('active');
-    }
-
-    function closeModal() {
-      document.getElementById('downloadModal').classList.remove('active');
-    }
-
-    // Close modal when clicking outside
-    window.addEventListener('click', (event) => {
-      const modal = document.getElementById('downloadModal');
-      if (event.target === modal) {
-        closeModal();
-      }
-    });
-  </script>
-</body>
-
-</html>
-
-  <!-- Coming Soon Modal -->
-  <div id="coming-soon-modal" class="modal-overlay">
-    <div class="modal-content">
-      <button class="modal-close" aria-label="Close modal"><i data-lucide="x"></i></button>
-      <div class="modal-icon-wrapper">
-        <i data-lucide="monitor" class="text-cyan"></i>
-      </div>
-      <h3 class="modal-title">Windows Version</h3>
-      <p class="modal-desc">We are actively refining the native Windows desktop experience. It will be dropping soon
-        with full Docker BYOB integration!</p>
-      <button class="btn btn-primary modal-close-btn">Got it!</button>
-    </div>
-  </div>
-
   <script src="script.js" defer></script>
 </body>
 

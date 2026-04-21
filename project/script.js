@@ -38,12 +38,6 @@ themeToggle.addEventListener('click', () => {
     setTheme(currentTheme === 'dark' ? 'light' : 'dark');
 });
 
-// Toggle Event Listener
-themeToggle.addEventListener('click', () => {
-    const currentTheme = htmlElement.getAttribute('data-theme');
-    setTheme(currentTheme === 'dark' ? 'light' : 'dark');
-});
-
 // Typewriter Effect
 const textToType = "Advanced File Management & Conversion Tool";
 const subtitleElement = document.querySelector('.hero-subtitle');
@@ -73,14 +67,14 @@ if (subtitleElement) {
 
 // Modal Logic
 function openModal() {
-    const modal = document.getElementById('coming-soon-modal');
+    const modal = document.getElementById('downloadModal');
     if (modal) {
         modal.classList.add('active');
     }
 }
 
 function closeModal() {
-    const modal = document.getElementById('coming-soon-modal');
+    const modal = document.getElementById('downloadModal');
     if (modal) {
         modal.classList.remove('active');
     }
@@ -94,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     window.addEventListener('click', (e) => {
-        const modal = document.getElementById('coming-soon-modal');
+        const modal = document.getElementById('downloadModal');
         if (e.target === modal) {
             closeModal();
         }
