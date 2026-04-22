@@ -1,6 +1,6 @@
 # Konvert - Advanced File Management & Conversion Tool
 
-**Last Updated:** Tue Apr 21 11:02:17 UTC 2026
+**Last Updated:** Wed Apr 22 11:00:54 UTC 2026
 
 ## Documentation
 See [SELF_HOSTING_101.md](./SELF_HOSTING_101.md) for self-hosting guide.
