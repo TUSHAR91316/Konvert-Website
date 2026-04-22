@@ -1,4 +1,4 @@
-# Konvert - Advanced File Management & Conversion Tool
+# Konvert - Advanced File Management & Conversion Tool.
 
 **Last Updated:** Wed Apr 22 11:00:54 UTC 2026
 
