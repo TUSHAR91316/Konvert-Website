@@ -1,18 +1,11 @@
 # Konvert - Advanced File Management & Conversion Tool
 
-<p align="center">
-  <img src="assets/images/readme_icon.png" width="150" alt="Konvert Logo">
-</p>
+**Last Updated:** Fri Apr 24 11:02:38 UTC 2026
 
-<p align="center">
-  <a href="https://konvert-website.vercel.app/">
-    <img src="https://img.shields.io/badge/Official-Website-blue?style=for-the-badge&logo=vercel" alt="Official Website">
-  </a>
-  <a href="https://www.amazon.in/PrivateByte-Labs-Konvert/dp/B0GDRZLHZ7/">
-    <img src="https://img.shields.io/badge/Get_it_on-Amazon_Appstore-orange?style=for-the-badge&logo=amazon" alt="Available on Amazon Appstore">
-  </a>
-</p>
+## Documentation
+See [SELF_HOSTING_101.md](./SELF_HOSTING_101.md) for self-hosting guide.
 
+<<<<<<< HEAD
 Konvert is a hybrid, secure, and powerful mobile application designed to handle file conversions and compression with a focus on **User Privacy** and **Security**. Unlike typical web tools, Konvert processes sensitive files (like Images) locally on your device whenever possible.
 
 ## 🌟 Key Features
@@ -94,3 +87,6 @@ This application relies on a local Docker backend securely exposed via an ngrok 
 4. **Configure App Settings**:
    Launch the app on your device/emulator. Navigate to the **Settings** screen inside Konvert and paste your static `.ngrok-free.app` URL into the "Backend URL" field to connect globally instantly!
    *(Note: You no longer need to edit `.env` or rebuild the APK!)*
+=======
+Visit our [Community Discussions](https://github.com/TUSHAR91316/Konvert-Website/discussions) to share feedback and ideas.
+>>>>>>> ed6634d272e207bef473d66b6e4790405056dab1
