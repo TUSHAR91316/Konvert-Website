@@ -731,7 +731,10 @@
       try {
         const res = await fetch(
           'https://api.github.com/repos/TUSHAR91316/Konvert-Website/releases?per_page=30',
-          { headers: { 'Accept': 'application/vnd.github+json' } }
+          { 
+            headers: { 'Accept': 'application/vnd.github+json' },
+            cache: 'no-store'
+          }
         );
         if (!res.ok) throw new Error(`GitHub API ${res.status}`);
         const releases = await res.json();
