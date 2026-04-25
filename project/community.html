@@ -10,7 +10,7 @@
     <meta name="robots" content="index, follow" />
     <meta name="author" content="Konvert" />
     <meta name="theme-color" content="#10b981" />
-    <link rel="canonical" href="https://konvert-website.vercel.app/community.html" />
+    <link rel="canonical" href="https://konvert-website.vercel.app/community" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
@@ -318,52 +318,17 @@
     <!-- Footer Links -->
     <footer style="text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.9rem;">
         <nav style="margin-bottom: 1rem;">
-            <a href="index.html" style="margin: 0 1rem; color: var(--text-main); text-decoration: none;">Home</a>
-            <a href="privacy-policy.html"
+            <a href="/" style="margin: 0 1rem; color: var(--text-main); text-decoration: none;">Home</a>
+            <a href="privacy-policy"
                 style="margin: 0 1rem; color: var(--text-main); text-decoration: none;">Privacy</a>
-            <a href="roadmap.html" style="margin: 0 1rem; color: var(--text-main); text-decoration: none;">Roadmap</a>
-            <a href="self-hosting.html"
+            <a href="roadmap" style="margin: 0 1rem; color: var(--text-main); text-decoration: none;">Roadmap</a>
+            <a href="self-hosting"
                 style="margin: 0 1rem; color: var(--text-main); text-decoration: none;">Self-Hosting</a>
         </nav>
         <p>&copy; 2024 Konvert. All rights reserved.</p>
     </footer>
 
-    <script>
-        // Theme Toggle Logic (same as main site)
-        const themeToggle = document.getElementById('theme-toggle');
-        const moonWrapper = document.getElementById('moon-wrapper');
-        const sunWrapper = document.getElementById('sun-wrapper');
-        const htmlElement = document.documentElement;
-
-        function setTheme(theme) {
-            if (theme === 'dark') {
-                htmlElement.setAttribute('data-theme', 'dark');
-                moonWrapper.style.display = 'none';
-                sunWrapper.style.display = 'block';
-                localStorage.setItem('theme', 'dark');
-            } else {
-                htmlElement.setAttribute('data-theme', 'light');
-                moonWrapper.style.display = 'block';
-                sunWrapper.style.display = 'none';
-                localStorage.setItem('theme', 'light');
-            }
-        }
-
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme) {
-            setTheme(savedTheme);
-        } else if (window.matchMedia('(prefers-color-color: dark)').matches) {
-            setTheme('dark');
-        }
-
-        themeToggle.addEventListener('click', () => {
-            const currentTheme = htmlElement.getAttribute('data-theme') || 'light';
-            setTheme(currentTheme === 'light' ? 'dark' : 'light');
-        });
-
-        // Initialize Lucide Icons
-        lucide.createIcons();
-    </script>
+    <script src="script.js" defer></script>
 </body>
 
 </html>

@@ -10,7 +10,7 @@
   <meta name="robots" content="index, follow" />
   <meta name="author" content="Konvert" />
   <meta name="theme-color" content="#10b981" />
-  <link rel="canonical" href="https://konvert-website.vercel.app/faq.html" />
+  <link rel="canonical" href="https://konvert-website.vercel.app/faq" />
 
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
@@ -363,6 +363,12 @@
 </head>
 
 <body>
+  <!-- Sticky Back to Home -->
+  <a href="/" class="top-back-btn" aria-label="Back to Home">
+    <i data-lucide="arrow-left" style="width: 1.2rem; height: 1.2rem;"></i>
+    Home
+  </a>
+
   <!-- Theme Toggle -->
   <button id="theme-toggle" aria-label="Toggle theme">
     <span id="moon-wrapper"><i data-lucide="moon"></i></span>
@@ -423,7 +429,7 @@
             <li><strong>Android</strong> - Download from Google Play Store or Amazon Appstore</li>
             <li><strong>Windows</strong> - Download directly from GitHub Releases</li>
           </ul>
-          <p>We're working on expanding to more platforms. Check the <a href="roadmap.html" class="faq-link">Roadmap</a>
+          <p>We're working on expanding to more platforms. Check the <a href="roadmap" class="faq-link">Roadmap</a>
             for upcoming releases.</p>
         </div>
       </div>
@@ -461,7 +467,7 @@
             <li>No ads, no trackers, no telemetry</li>
             <li>Optional VirusTotal integration for malware scanning</li>
           </ul>
-          <p>For more details, see our <a href="privacy-policy.html" class="faq-link">Privacy Policy</a>.</p>
+          <p>For more details, see our <a href="privacy-policy" class="faq-link">Privacy Policy</a>.</p>
         </div>
       </div>
 
@@ -478,7 +484,7 @@
             <li><strong>Documents to PDF:</strong> DOC, DOCX, TXT, RTF, ODT, HTML</li>
             <li><strong>Office to PDF:</strong> XLS, XLSX, PPT, PPTX</li>
           </ul>
-          <p>We're constantly adding more formats. Check the <a href="roadmap.html" class="faq-link">Roadmap</a> for
+          <p>We're constantly adding more formats. Check the <a href="roadmap" class="faq-link">Roadmap</a> for
             upcoming support.</p>
         </div>
       </div>
@@ -509,7 +515,7 @@
           <p>Setting up the self-hosted backend is simple:</p>
           <ul>
             <li>Have Docker installed on your computer</li>
-            <li>Follow our step-by-step guide in <a href="self-hosting.html" class="faq-link">Self-Hosting 101</a></li>
+            <li>Follow our step-by-step guide in <a href="self-hosting" class="faq-link">Self-Hosting 101</a></li>
             <li>It takes about 5-10 minutes to set up</li>
             <li>Your backend processes DOCX, XLSX, PPTX conversions locally</li>
           </ul>
@@ -527,7 +533,7 @@
           <ul>
             <li>You can use Konvert for image conversions <strong>without any setup</strong></li>
             <li>If you want to convert documents (DOCX, XLSX, PPTX), you need to set up the backend</li>
-            <li>Setting up takes just a few minutes - see our <a href="self-hosting.html" class="faq-link">Self-Hosting
+            <li>Setting up takes just a few minutes - see our <a href="self-hosting" class="faq-link">Self-Hosting
                 101</a> guide</li>
             <li>It's free and runs completely on your machine</li>
           </ul>
@@ -570,10 +576,10 @@
         <div class="faq-answer">
           <p>We'd love your feedback! You can:</p>
           <ul>
-            <li>Join our <a href="community.html" class="faq-link">Community Discussions</a> on GitHub</li>
+            <li>Join our <a href="community" class="faq-link">Community Discussions</a> on GitHub</li>
             <li>Post feature requests in the Feature Requests category</li>
             <li>Report bugs in the Troubleshooting section</li>
-            <li>View the <a href="roadmap.html" class="faq-link">Roadmap</a> to see planned features</li>
+            <li>View the <a href="roadmap" class="faq-link">Roadmap</a> to see planned features</li>
           </ul>
           <p>Your feedback helps us improve Konvert!</p>
         </div>
@@ -585,11 +591,11 @@
       <h3>Still have questions?</h3>
       <p>Join our community or check the self-hosting guide for more detailed information.</p>
       <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-        <a href="community.html" class="btn-cta">
+        <a href="community" class="btn-cta">
           <i data-lucide="users" style="width: 20px; height: 20px;"></i>
           Join Community
         </a>
-        <a href="self-hosting.html" class="btn-cta">
+        <a href="self-hosting" class="btn-cta">
           <i data-lucide="server" style="width: 20px; height: 20px;"></i>
           Self-Hosting Guide
         </a>
@@ -600,90 +606,58 @@
   <!-- Footer -->
   <footer style="text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.9rem;">
     <nav style="margin-bottom: 1rem;">
-      <a href="index.html" style="margin: 0 1rem; color: var(--text-main); text-decoration: none;">Home</a>
-      <a href="privacy-policy.html" style="margin: 0 1rem; color: var(--text-main); text-decoration: none;">Privacy</a>
-      <a href="roadmap.html" style="margin: 0 1rem; color: var(--text-main); text-decoration: none;">Roadmap</a>
-      <a href="community.html" style="margin: 0 1rem; color: var(--text-main); text-decoration: none;">Community</a>
+      <a href="/" style="margin: 0 1rem; color: var(--text-main); text-decoration: none;">Home</a>
+      <a href="privacy-policy" style="margin: 0 1rem; color: var(--text-main); text-decoration: none;">Privacy</a>
+      <a href="roadmap" style="margin: 0 1rem; color: var(--text-main); text-decoration: none;">Roadmap</a>
+      <a href="community" style="margin: 0 1rem; color: var(--text-main); text-decoration: none;">Community</a>
     </nav>
     <p>&copy; 2024 Konvert. All rights reserved.</p>
   </footer>
 
+  <script src="script.js" defer></script>
   <script>
-    // Theme Toggle Logic
-    const themeToggle = document.getElementById('theme-toggle');
-    const moonWrapper = document.getElementById('moon-wrapper');
-    const sunWrapper = document.getElementById('sun-wrapper');
-    const htmlElement = document.documentElement;
+    document.addEventListener('DOMContentLoaded', () => {
+      // FAQ Functionality
+      const faqItems = document.querySelectorAll('.faq-item');
+      const categoryBtns = document.querySelectorAll('.category-btn');
+      const searchInput = document.getElementById('faq-search');
 
-    function setTheme(theme) {
-      if (theme === 'dark') {
-        htmlElement.setAttribute('data-theme', 'dark');
-        moonWrapper.style.display = 'none';
-        sunWrapper.style.display = 'block';
-        localStorage.setItem('theme', 'dark');
-      } else {
-        htmlElement.setAttribute('data-theme', 'light');
-        moonWrapper.style.display = 'block';
-        sunWrapper.style.display = 'none';
-        localStorage.setItem('theme', 'light');
-      }
-    }
-
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      setTheme(savedTheme);
-    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      setTheme('dark');
-    }
-
-    themeToggle.addEventListener('click', () => {
-      const currentTheme = htmlElement.getAttribute('data-theme') || 'light';
-      setTheme(currentTheme === 'light' ? 'dark' : 'light');
-    });
-
-    // Initialize Lucide Icons
-    lucide.createIcons();
-
-    // FAQ Functionality
-    const faqItems = document.querySelectorAll('.faq-item');
-    const categoryBtns = document.querySelectorAll('.category-btn');
-    const searchInput = document.getElementById('faq-search');
-
-    // Toggle FAQ item
-    faqItems.forEach(item => {
-      item.querySelector('.faq-question').addEventListener('click', () => {
-        item.classList.toggle('active');
+      // Toggle FAQ item
+      faqItems.forEach(item => {
+        item.querySelector('.faq-question').addEventListener('click', () => {
+          item.classList.toggle('active');
+        });
       });
-    });
 
-    // Category Filter
-    categoryBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        categoryBtns.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
+      // Category Filter
+      categoryBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          categoryBtns.forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
 
-        const category = btn.getAttribute('data-category');
+          const category = btn.getAttribute('data-category');
+          faqItems.forEach(item => {
+            if (category === 'all' || item.getAttribute('data-category') === category) {
+              item.style.display = 'block';
+            } else {
+              item.style.display = 'none';
+            }
+          });
+        });
+      });
+
+      // Search Functionality
+      searchInput.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
         faqItems.forEach(item => {
-          if (category === 'all' || item.getAttribute('data-category') === category) {
+          const question = item.querySelector('.faq-question span').textContent.toLowerCase();
+          const answer = item.querySelector('.faq-answer').textContent.toLowerCase();
+          if (question.includes(searchTerm) || answer.includes(searchTerm)) {
             item.style.display = 'block';
           } else {
             item.style.display = 'none';
           }
         });
-      });
-    });
-
-    // Search Functionality
-    searchInput.addEventListener('input', (e) => {
-      const searchTerm = e.target.value.toLowerCase();
-      faqItems.forEach(item => {
-        const question = item.querySelector('.faq-question span').textContent.toLowerCase();
-        const answer = item.querySelector('.faq-answer').textContent.toLowerCase();
-        if (question.includes(searchTerm) || answer.includes(searchTerm)) {
-          item.style.display = 'block';
-        } else {
-          item.style.display = 'none';
-        }
       });
     });
   </script>
