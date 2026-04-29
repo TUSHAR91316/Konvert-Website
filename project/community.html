@@ -28,192 +28,34 @@
 
     <link rel="stylesheet" href="style.css" />
     <script src="https://unpkg.com/lucide@latest" defer></script>
-    <style>
-        .community-container {
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 3rem 1rem;
-        }
-
-        .community-hero {
-            text-align: center;
-            margin-bottom: 3rem;
-            animation: fade-in 0.8s ease-out;
-        }
-
-        .community-hero h1 {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            background: var(--primary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .community-hero p {
-            font-size: 1.125rem;
-            color: var(--text-muted);
-            margin-bottom: 2rem;
-            line-height: 1.6;
-        }
-
-        .discussion-categories {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-            margin-bottom: 3rem;
-        }
-
-        .category-card {
-            background: var(--card-bg);
-            border: var(--glass-border);
-            border-radius: 12px;
-            padding: 2rem;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .category-card:hover {
-            transform: translateY(-4px);
-            border-color: var(--emerald-500);
-            box-shadow: 0 12px 24px rgba(16, 185, 129, 0.15);
-        }
-
-        .category-card h3 {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 0.75rem;
-            font-size: 1.25rem;
-        }
-
-        .category-card p {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            line-height: 1.5;
-            margin-bottom: 1rem;
-        }
-
-        .category-icon {
-            width: 24px;
-            height: 24px;
-            color: var(--emerald-500);
-        }
-
-        .cta-section {
-            background: var(--primary-gradient);
-            border-radius: 12px;
-            padding: 3rem 2rem;
-            text-align: center;
-            color: white;
-            margin-bottom: 3rem;
-        }
-
-        .cta-section h2 {
-            font-size: 1.75rem;
-            margin-bottom: 1rem;
-        }
-
-        .cta-section p {
-            font-size: 1.05rem;
-            margin-bottom: 2rem;
-            opacity: 0.95;
-        }
-
-        .btn-github {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.75rem;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            backdrop-filter: blur(8px);
-        }
-
-        .btn-github:hover {
-            background: rgba(255, 255, 255, 0.3);
-            border-color: rgba(255, 255, 255, 0.5);
-            transform: translateY(-2px);
-        }
-
-        .guidelines-section {
-            background: var(--card-bg);
-            border: var(--glass-border);
-            border-radius: 12px;
-            padding: 2rem;
-            backdrop-filter: blur(10px);
-        }
-
-        .guidelines-section h2 {
-            margin-bottom: 1.5rem;
-            font-size: 1.5rem;
-        }
-
-        .guidelines-list {
-            list-style: none;
-            padding: 0;
-        }
-
-        .guidelines-list li {
-            padding: 0.75rem 0;
-            padding-left: 1.75rem;
-            position: relative;
-            color: var(--text-muted);
-            line-height: 1.6;
-        }
-
-        .guidelines-list li:before {
-            content: "✓";
-            position: absolute;
-            left: 0;
-            color: var(--emerald-500);
-            font-weight: bold;
-            font-size: 1.1rem;
-        }
-
-        @keyframes fade-in {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .community-hero h1 {
-                font-size: 2rem;
-            }
-
-            .cta-section {
-                padding: 2rem 1.5rem;
-            }
-
-            .cta-section h2 {
-                font-size: 1.5rem;
-            }
-        }
-    </style>
 </head>
 
 <body>
-    <!-- Theme Toggle -->
-    <button id="theme-toggle" aria-label="Toggle theme">
-        <span id="moon-wrapper"><i data-lucide="moon"></i></span>
-        <span id="sun-wrapper" style="display: none;"><i data-lucide="sun"></i></span>
-    </button>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container nav-container">
+            <a href="/" class="nav-brand">
+                <i data-lucide="zap" class="text-emerald"></i>
+                <span>Konvert</span>
+            </a>
+            <div class="nav-links" id="nav-links">
+                <a href="/" class="nav-link">Home</a>
+                <a href="roadmap" class="nav-link">Roadmap</a>
+                <a href="self-hosting" class="nav-link">Self-Hosting</a>
+                <a href="community" class="nav-link active">Community</a>
+                <a href="faq" class="nav-link">FAQ</a>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle theme">
+                    <span id="moon-wrapper"><i data-lucide="moon"></i></span>
+                    <span id="sun-wrapper" style="display: none;"><i data-lucide="sun"></i></span>
+                </button>
+                <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle menu">
+                    <i data-lucide="menu"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
 
     <main class="community-container">
         <!-- Hero Section -->

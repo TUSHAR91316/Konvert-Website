@@ -127,11 +127,31 @@
 </head>
 
 <body>
-  <!-- Theme Toggle -->
-  <button id="theme-toggle" aria-label="Toggle theme">
-    <span id="moon-wrapper"><i data-lucide="moon"></i></span>
-    <span id="sun-wrapper" style="display: none;"><i data-lucide="sun"></i></span>
-  </button>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="container nav-container">
+      <a href="/" class="nav-brand">
+        <i data-lucide="zap" class="text-emerald"></i>
+        <span>Konvert</span>
+      </a>
+      <div class="nav-links" id="nav-links">
+        <a href="/" class="nav-link active">Home</a>
+        <a href="roadmap" class="nav-link">Roadmap</a>
+        <a href="self-hosting" class="nav-link">Self-Hosting</a>
+        <a href="community" class="nav-link">Community</a>
+        <a href="faq" class="nav-link">FAQ</a>
+      </div>
+      <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <button id="theme-toggle" class="theme-toggle-btn" aria-label="Toggle theme">
+          <span id="moon-wrapper"><i data-lucide="moon"></i></span>
+          <span id="sun-wrapper" style="display: none;"><i data-lucide="sun"></i></span>
+        </button>
+        <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle menu">
+          <i data-lucide="menu"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
 
   <!-- Hidden SEO Keywords -->
   <div class="sr-only">
@@ -174,21 +194,19 @@
             <i data-lucide="download"></i>
             <span>Download for Windows</span>
           </button>
-          <a href="self-hosting" class="btn"
-            style="background: transparent; color: var(--text-main); border: 2px solid var(--border-color); backdrop-filter: blur(8px);">
+          <a href="self-hosting" class="btn btn-outline">
             <i data-lucide="server"></i>
             <span>Setup Local Server</span>
           </a>
-          <a href="roadmap" class="btn" id="roadmap-btn"
-            style="background: transparent; color: var(--text-main); border: 2px solid var(--border-color); backdrop-filter: blur(8px);">
+          <a href="roadmap" class="btn btn-outline" id="roadmap-btn">
             <i data-lucide="map"></i>
             <span>Roadmap</span>
           </a>
-          <a href="community" class="btn"
-            style="background: transparent; color: var(--text-main); border: 2px solid var(--border-color); backdrop-filter: blur(8px);">
+          <a href="community" class="btn btn-outline">
             <i data-lucide="users"></i>
             <span>Community</span>
-          </a>          <a href="faq" class="btn" style="background: transparent; color: var(--text-main); border: 2px solid var(--border-color); backdrop-filter: blur(8px);">
+          </a>
+          <a href="faq" class="btn btn-outline">
             <i data-lucide="help-circle"></i>
             <span>FAQ</span>
           </a>        </div>
