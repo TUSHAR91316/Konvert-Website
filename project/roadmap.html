@@ -28,6 +28,8 @@
   <meta http-equiv="Content-Security-Policy"
     content="default-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://avatars.githubusercontent.com; font-src 'self' data:; connect-src https://api.github.com;">
 
+  <link rel="preconnect" href="https://unpkg.com" />
+  <link rel="preconnect" href="https://api.github.com" />
   <link rel="stylesheet" href="style.css" />
   <!-- Lucide Icons -->
   <script src="https://unpkg.com/lucide@latest" defer></script>
@@ -211,15 +213,29 @@
       const loader = document.getElementById('releases-loader');
 
       try {
-        const res = await fetch(
-          'https://api.github.com/repos/TUSHAR91316/Konvert-Website/releases?per_page=30',
-          { 
-            headers: { 'Accept': 'application/vnd.github+json' },
-            cache: 'no-store'
-          }
-        );
-        if (!res.ok) throw new Error(`GitHub API ${res.status}`);
-        const releases = await res.json();
+        const cacheKey = 'konvert_releases_cache';
+        const cacheTimeKey = 'konvert_releases_time';
+        const cacheDuration = 15 * 60 * 1000; // 15 minutes
+
+        let releases;
+        const cachedData = sessionStorage.getItem(cacheKey);
+        const cachedTime = sessionStorage.getItem(cacheTimeKey);
+
+        if (cachedData && cachedTime && (Date.now() - parseInt(cachedTime)) < cacheDuration) {
+          releases = JSON.parse(cachedData);
+        } else {
+          const res = await fetch(
+            'https://api.github.com/repos/TUSHAR91316/Konvert-Website/releases?per_page=30',
+            { 
+              headers: { 'Accept': 'application/vnd.github+json' },
+              cache: 'force-cache'
+            }
+          );
+          if (!res.ok) throw new Error(`GitHub API ${res.status}`);
+          releases = await res.json();
+          sessionStorage.setItem(cacheKey, JSON.stringify(releases));
+          sessionStorage.setItem(cacheTimeKey, Date.now().toString());
+        }
 
         // Compute stats
         const totalDownloads = releases.reduce((sum, r) =>

@@ -11,32 +11,43 @@ const htmlElement = document.documentElement;
 function setTheme(theme) {
     if (theme === 'dark') {
         htmlElement.setAttribute('data-theme', 'dark');
-        moonWrapper.style.display = 'none';
-        sunWrapper.style.display = 'block';
+        if (moonWrapper) moonWrapper.style.display = 'none';
+        if (sunWrapper) sunWrapper.style.display = 'block';
         localStorage.setItem('theme', 'dark');
     } else {
         htmlElement.setAttribute('data-theme', 'light');
-        moonWrapper.style.display = 'block';
-        sunWrapper.style.display = 'none';
+        if (moonWrapper) moonWrapper.style.display = 'block';
+        if (sunWrapper) sunWrapper.style.display = 'none';
         localStorage.setItem('theme', 'light');
     }
 }
 
 // Check saved preference or system preference
 const savedTheme = localStorage.getItem('theme');
+const systemThemeMedia = window.matchMedia('(prefers-color-scheme: dark)');
+
 if (savedTheme) {
     setTheme(savedTheme);
-} else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+} else if (systemThemeMedia.matches) {
     setTheme('dark');
 } else {
     setTheme('light');
 }
 
-// Toggle Event Listener
-themeToggle.addEventListener('click', () => {
-    const currentTheme = htmlElement.getAttribute('data-theme');
-    setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+// Listen for system theme changes
+systemThemeMedia.addEventListener('change', (e) => {
+    if (!localStorage.getItem('theme')) {
+        setTheme(e.matches ? 'dark' : 'light');
+    }
 });
+
+// Toggle Event Listener
+if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+        const currentTheme = htmlElement.getAttribute('data-theme');
+        setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+    });
+}
 
 // Typewriter Effect
 const textToType = "Advanced File Management & Conversion Tool";
@@ -66,17 +77,17 @@ if (subtitleElement) {
 }
 
 // Modal Logic
+const downloadModal = document.getElementById('downloadModal');
+
 function openModal() {
-    const modal = document.getElementById('downloadModal');
-    if (modal) {
-        modal.classList.add('active');
+    if (downloadModal) {
+        downloadModal.classList.add('active');
     }
 }
 
 function closeModal() {
-    const modal = document.getElementById('downloadModal');
-    if (modal) {
-        modal.classList.remove('active');
+    if (downloadModal) {
+        downloadModal.classList.remove('active');
     }
 }
 
@@ -88,15 +99,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     window.addEventListener('click', (e) => {
-        const modal = document.getElementById('downloadModal');
-        if (e.target === modal) {
+        if (e.target === downloadModal) {
             closeModal();
         }
     });
 
     // Handle Escape key to close modal
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') {
+        if (e.key === 'Escape' && downloadModal && downloadModal.classList.contains('active')) {
             closeModal();
         }
     });
