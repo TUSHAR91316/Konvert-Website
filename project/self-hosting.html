@@ -15,11 +15,29 @@
   <link rel="canonical" href="https://konvert-website.vercel.app/self-hosting" />
   <link rel="icon" type="image/png" href="readme_icon.webp" />
 
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://konvert-website.vercel.app/self-hosting" />
+  <meta property="og:title" content="Konvert 101: Complete Setup & Self-Hosting Guide" />
+  <meta property="og:description" content="Complete self-hosting guide for Konvert. Learn how to set up your own personal Docker backend for secure document processing." />
+  <meta property="og:image" content="https://konvert-website.vercel.app/readme_icon.webp" />
+  <meta property="og:site_name" content="Konvert" />
+  <meta property="og:locale" content="en_US" />
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary" />
+  <meta property="twitter:url" content="https://konvert-website.vercel.app/self-hosting" />
+  <meta property="twitter:title" content="Konvert 101: Complete Setup & Self-Hosting Guide" />
+  <meta property="twitter:description" content="Complete self-hosting guide for Konvert. Learn how to set up your own personal Docker backend for secure document processing." />
+  <meta property="twitter:image" content="https://konvert-website.vercel.app/readme_icon.webp" />
+
   <meta http-equiv="Content-Security-Policy"
     content="default-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:;">
   <link rel="stylesheet" href="style.css" />
   
   <!-- Lucide Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="preconnect" href="https://unpkg.com" />
   <script src="https://unpkg.com/lucide@latest" defer></script>
 </head>
@@ -160,10 +178,14 @@ Start-Process ngrok -ArgumentList "http --domain=cute-dog-123.ngrok-free.app 808
           <span class="footer-logo-text">Konvert</span>
         </div>
         <div class="footer-links">
+          <a href="/">Home</a>
           <a href="/roadmap">Roadmap</a>
+          <a href="/self-hosting">Self-Hosting</a>
           <a href="/privacy-policy">Privacy Policy</a>
+          <a href="/community">Community</a>
+          <a href="/faq">FAQ</a>
         </div>
-        <p class="footer-copy">&copy; 2026 Konvert. All rights reserved.</p>
+        <p class="footer-copy">&copy; 2026 Konvert. All rights reserved. | Built with ❤️ for privacy-first file conversion.</p>
       </div>
     </div>
   </footer>
