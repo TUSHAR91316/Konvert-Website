@@ -32,6 +32,31 @@
     --navbar-bg: rgba(17, 24, 39, 0.85);
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
+/* Custom Themed Scrollbar */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--border-color);
+    border-radius: 999px;
+    border: 2.5px solid var(--bg-color);
+    transition: background-color 0.3s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--emerald-500);
+}
+
 * {
     margin: 0;
     padding: 0;

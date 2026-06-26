@@ -103,6 +103,7 @@ This application relies on a local Docker backend securely exposed via an ngrok 
 
 - **Frontend**: Flutter (Dart)
 - **Backend**: Python (FastAPI) + LibreOffice (in Docker)
+- **Website (Landing Page)**: HTML5, CSS3, Vanilla JS (PWA enabled with `manifest.json` & Service Worker offline caching)
 - **Security**: VirusTotal API + Flutter Secure Storage.
 - **Tools**: `flutter_image_compress`, `file_picker`, `firebase_auth`
 - **CI/CD**: GitHub Actions (Automated Testing & Building)
