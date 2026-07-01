@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
-Disallow:
 
 Sitemap: https://konvert-website.vercel.app/sitemap.xml
