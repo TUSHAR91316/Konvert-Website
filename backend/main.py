@@ -3,18 +3,26 @@ import re
 import shutil
 import subprocess
 import uuid
-import logging
 from fastapi import FastAPI, UploadFile, File, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.get("/health")
+async def health_check():
+    return {"status": "ok"}
+
 UPLOAD_DIR = "/tmp/uploads"
 OUTPUT_DIR = "/tmp/outputs"
-
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 os.makedirs(OUTPUT_DIR, exist_ok=True)
@@ -40,9 +48,16 @@ async def convert_file(file: UploadFile = File(...), target_format: str = "pdf")
     # Validation: valid formats?
     valid_targets = ["pdf", "docx", "doc", "odt", "jpg", "png"]
     if target_format not in valid_targets:
-        raise HTTPException(status_code=400, detail="Invalid target format")
+        return JSONResponse(
+            status_code=400,
+            content={
+                "error_code": "4001_ERR_INVALID_FORMAT",
+                "message": "The requested format is unsupported.",
+                "resolution": f"Please choose from: {', '.join(valid_targets)}"
+            }
+        )
 
-    output_path = None
+    success = False
     try:
         # 3. Run LibreOffice (headless)
         # unoconv or libreoffice directly
@@ -54,12 +69,18 @@ async def convert_file(file: UploadFile = File(...), target_format: str = "pdf")
             input_path
         ]
         
-        logger.info(f"Starting conversion for {input_filename} to {target_format}")
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=300)  # 5 min timeout
+        result = subprocess.run(cmd, capture_output=True, text=True)
         
         if result.returncode != 0:
-            logger.error(f"Conversion failed: {result.stderr}")
-            raise HTTPException(status_code=500, detail="Conversion process failed")
+            print(f"Conversion failed: {result.stderr}")
+            return JSONResponse(
+                status_code=500,
+                content={
+                    "error_code": "5001_ERR_CONVERSION_CRASH",
+                    "message": "The document processor crashed while attempting to convert your file.",
+                    "resolution": "Your document may be corrupted, encrypted with a password, or contain unsupported macros."
+                }
+            )
             
         # 4. Find output file
         # LibreOffice typically keeps the basename and changes extension
@@ -72,29 +93,42 @@ async def convert_file(file: UploadFile = File(...), target_format: str = "pdf")
         output_path = os.path.join(OUTPUT_DIR, expected_output_filename)
         
         if not os.path.exists(output_path):
-             # Fallback: search for any file starting with base_name
-             for f in os.listdir(OUTPUT_DIR):
-                 if f.startswith(base_name) and f.endswith(f".{target_format}"):
-                     output_path = os.path.join(OUTPUT_DIR, f)
-                     break
-             else:
-                 raise HTTPException(status_code=500, detail="Output file not found after conversion")
+             return JSONResponse(
+                status_code=500,
+                content={
+                    "error_code": "5002_ERR_OUTPUT_MISSING",
+                    "message": "The conversion completed, but the output file could not be located.",
+                    "resolution": "Please try converting the file again or contact support."
+                }
+            )
 
-        logger.info(f"Conversion successful: {output_path}")
         # 5. Return file
-        return FileResponse(output_path, filename=f"converted.{target_format}")
+        from starlette.background import BackgroundTask
+        
+        def cleanup_output():
+            if os.path.exists(output_path):
+                os.remove(output_path)
+                
+        success = True
+        return FileResponse(
+            output_path, 
+            filename=f"converted.{target_format}",
+            background=BackgroundTask(cleanup_output)
+        )
 
-    except subprocess.TimeoutExpired:
-        logger.error("Conversion timed out")
-        raise HTTPException(status_code=408, detail="Conversion timed out")
     except Exception as e:
-        logger.error(f"Error during conversion: {str(e)}")
-        raise HTTPException(status_code=500, detail=str(e))
+        return JSONResponse(
+            status_code=500,
+            content={
+                "error_code": "5000_ERR_INTERNAL_SERVER",
+                "message": "An unexpected server error occurred during conversion.",
+                "resolution": str(e)
+            }
+        )
     finally:
-        # Cleanup input and output
+        # Cleanup input
         if os.path.exists(input_path):
             os.remove(input_path)
-        if output_path and os.path.exists(output_path):
-            # Note: FileResponse sends the file, but we can't delete it immediately.
-            # In production, use a background task or temp files with auto-delete.
-            pass  # For now, leave it; in real app, implement proper cleanup
+        # Cleanup leaked output on crash
+        if not success and 'output_path' in locals() and os.path.exists(output_path):
+            os.remove(output_path)
