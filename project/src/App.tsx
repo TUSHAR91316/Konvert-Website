@@ -9,7 +9,6 @@ import { SelfHosting } from './pages/SelfHosting';
 import { FAQ } from './pages/FAQ';
 import { Community } from './pages/Community';
 import { PrivacyPolicy } from './pages/PrivacyPolicy';
-import { Dashboard } from './pages/Dashboard';
 import { Studio } from './pages/Studio';
 
 const App: React.FC = () => {
@@ -41,7 +40,6 @@ const App: React.FC = () => {
             <Route path="/community" element={<Community />} />
             <Route path="/faq" element={<FAQ />} />
             <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/dashboard" element={<Dashboard />} />
           </Routes>
         </main>
         

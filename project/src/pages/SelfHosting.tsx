@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Terminal, Copy, Check, Server, Shield, Network, Zap, CloudLightning } from 'lucide-react';
+import { ArrowLeft, Terminal, Copy, Check, Shield, Network, Zap, CloudLightning } from 'lucide-react';
 
 interface CopyBtnProps {
   text: string;
@@ -41,14 +41,10 @@ export const SelfHosting: React.FC = () => {
 
   return (
     <main className="page-container" style={{ paddingBottom: '4rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem', flexWrap: 'wrap', gap: '1rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', marginBottom: '2rem' }}>
         <Link to="/" className="back-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
           <ArrowLeft style={{ width: '16px', height: '16px' }} />
           Back to Home
-        </Link>
-        <Link to="/dashboard" className="backend-tester-btn" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', textDecoration: 'none', background: 'var(--primary-gradient)', padding: '0.5rem 1rem', borderRadius: '0.5rem', color: 'white', fontWeight: 600, fontSize: '0.9rem' }}>
-          <Server style={{ width: '16px', height: '16px' }} />
-          Test Backend Connection
         </Link>
       </div>
 
@@ -141,6 +137,12 @@ export const SelfHosting: React.FC = () => {
           <li>Paste your forwarding tunnel URL (e.g. <code style={{ fontFamily: 'monospace' }}>https://xxxx.ngrok-free.app</code>) into the backend server host address input.</li>
           <li>Click <strong>Test Connection</strong>. When it lights up green, you are fully set up to compile PDF documents!</li>
         </ol>
+        
+        <div style={{ marginTop: '1.5rem', padding: '1rem', background: 'rgba(16, 185, 129, 0.08)', border: '1px solid rgba(16, 185, 129, 0.25)', borderRadius: '0.75rem', fontSize: '0.95rem' }}>
+          <p style={{ margin: 0, color: 'var(--text-main)', lineHeight: 1.5 }}>
+            <strong>How to test your connection:</strong> To verify your backend is working, simply open the Konvert mobile app, paste your URL into the Settings screen, and try converting a document!
+          </p>
+        </div>
       </section>
 
       {/* Troubleshooting card */}
