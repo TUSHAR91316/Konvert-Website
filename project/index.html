@@ -2,36 +2,85 @@
 <html lang="en" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/webp" href="/readme_icon.webp" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    
-    <!-- Primary SEO Meta Tags -->
-    <title>Konvert - Privacy-First Advanced File Conversion</title>
-    <meta name="title" content="Konvert - Privacy-First Advanced File Conversion" />
-    <meta name="description" content="A powerful, privacy-focused file management and document conversion utility for Android and Windows. Keep your files local and secure." />
+
+    <!-- Favicon / PWA icons -->
+    <link rel="icon" type="image/webp" href="/readme_icon.webp" />
+    <link rel="apple-touch-icon" href="/readme_icon.webp" />
     <meta name="theme-color" content="#10b981" />
-    
-    <!-- PWA manifest -->
     <link rel="manifest" href="/manifest.json" />
-    
-    <!-- Google Fonts Integration -->
+
+    <!-- Primary SEO Meta Tags -->
+    <title>Konvert - Privacy-First File Conversion App for Android & Windows</title>
+    <meta name="title" content="Konvert - Privacy-First File Conversion App for Android & Windows" />
+    <meta name="description" content="Konvert is a powerful, privacy-focused file converter for Android and Windows. Compress images, convert documents to PDF, and scan files with VirusTotal — 100% locally, no cloud required." />
+    <meta name="keywords" content="file converter, offline file converter, image compressor, PDF converter, DOCX to PDF, JPG to PNG, privacy file converter, self-hosted converter, Docker converter, Android file app, Windows file converter" />
+    <meta name="author" content="Tushar Kothia" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://konvert-website.vercel.app/" />
+
+    <!-- DNS prefetch for external APIs -->
+    <link rel="dns-prefetch" href="//api.github.com" />
+    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+    <link rel="dns-prefetch" href="//fonts.gstatic.com" />
+
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@700&display=swap" rel="stylesheet" />
+
+    <!-- Preload critical asset -->
+    <link rel="preload" as="image" href="/readme_icon.webp" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://konvert.vercel.app/" />
-    <meta property="og:title" content="Konvert - Privacy-First Advanced File Conversion" />
-    <meta property="og:description" content="A powerful, privacy-focused file management and document conversion utility for Android and Windows. Keep your files local and secure." />
-    <meta property="og:image" content="/readme_icon.webp" />
+    <meta property="og:url" content="https://konvert-website.vercel.app/" />
+    <meta property="og:title" content="Konvert - Privacy-First File Conversion App" />
+    <meta property="og:description" content="Compress images, convert documents to PDF, and scan files — 100% locally on your device. No cloud. No tracking. Free forever." />
+    <meta property="og:image" content="https://konvert-website.vercel.app/readme_icon.webp" />
+    <meta property="og:image:width" content="512" />
+    <meta property="og:image:height" content="512" />
+    <meta property="og:site_name" content="Konvert" />
+    <meta property="og:locale" content="en_US" />
 
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content="https://konvert.vercel.app/" />
-    <meta property="twitter:title" content="Konvert - Privacy-First Advanced File Conversion" />
-    <meta property="twitter:description" content="A powerful, privacy-focused file management and document conversion utility for Android and Windows. Keep your files local and secure." />
-    <meta property="twitter:image" content="/readme_icon.webp" />
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://konvert-website.vercel.app/" />
+    <meta name="twitter:title" content="Konvert - Privacy-First File Conversion App" />
+    <meta name="twitter:description" content="Compress images, convert documents to PDF, and scan files — 100% locally on your device. No cloud. No tracking. Free forever." />
+    <meta name="twitter:image" content="https://konvert-website.vercel.app/readme_icon.webp" />
+
+    <!-- JSON-LD Structured Data (SoftwareApplication) for Google Rich Results -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Konvert",
+      "operatingSystem": "Android, Windows",
+      "applicationCategory": "UtilitiesApplication",
+      "description": "Privacy-first file converter and image compressor. Process files 100% locally — no cloud uploads, no tracking, no ads.",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "url": "https://konvert-website.vercel.app/",
+      "image": "https://konvert-website.vercel.app/readme_icon.webp",
+      "author": {
+        "@type": "Person",
+        "name": "Tushar Kothia"
+      },
+      "featureList": [
+        "Offline image compression",
+        "Image to PDF conversion",
+        "DOCX/PPTX to PDF via self-hosted Docker",
+        "VirusTotal malware scanning",
+        "Batch file processing",
+        "Guest mode — no account required",
+        "100% free, no ads"
+      ]
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>

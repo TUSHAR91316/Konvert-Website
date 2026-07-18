@@ -6,100 +6,75 @@ export const Navbar: React.FC = () => {
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     const saved = localStorage.getItem('theme');
     if (saved === 'dark' || saved === 'light') return saved;
-    const system = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    return system ? 'dark' : 'light';
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   });
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     const htmlElement = document.documentElement;
-    if (theme === 'dark') {
-      htmlElement.setAttribute('data-theme', 'dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      htmlElement.setAttribute('data-theme', 'light');
-      localStorage.setItem('theme', 'light');
-    }
+    htmlElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
   }, [theme]);
 
-  const toggleTheme = () => {
-    setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
-  };
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 10);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
-  const toggleMobileMenu = () => {
-    setMobileMenuOpen(prev => !prev);
-  };
+  const toggleTheme = () => setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
+  const closeMobile = () => setMobileMenuOpen(false);
 
   return (
-    <nav className="navbar">
+    <nav className={`navbar${scrolled ? ' scrolled' : ''}`}>
       <div className="container nav-container">
-        <Link to="/" className="nav-brand" onClick={() => setMobileMenuOpen(false)}>
+        <Link to="/" className="nav-brand" onClick={closeMobile}>
           <Zap className="text-emerald" style={{ width: '24px', height: '24px' }} />
           <span>Konvert</span>
         </Link>
-        <div className={`nav-links ${mobileMenuOpen ? 'active' : ''}`} id="nav-links">
-          <NavLink 
-            to="/" 
-            className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            Home
-          </NavLink>
-          <NavLink 
-            to="/studio" 
-            className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            Studio
-          </NavLink>
-          <NavLink 
-            to="/roadmap" 
-            className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            Roadmap
-          </NavLink>
-          <NavLink 
-            to="/self-hosting" 
-            className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            Self-Hosting
-          </NavLink>
-          <NavLink 
-            to="/community" 
-            className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            Community
-          </NavLink>
-          <NavLink 
-            to="/faq" 
-            className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            FAQ
-          </NavLink>
+
+        <div className={`nav-links${mobileMenuOpen ? ' active' : ''}`} id="nav-links">
+          {[
+            { to: '/', label: 'Home' },
+            { to: '/studio', label: 'Studio' },
+            { to: '/roadmap', label: 'Roadmap' },
+            { to: '/self-hosting', label: 'Self-Hosting' },
+            { to: '/community', label: 'Community' },
+            { to: '/faq', label: 'FAQ' },
+          ].map(({ to, label }) => (
+            <NavLink
+              key={to}
+              to={to}
+              end={to === '/'}
+              className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}
+              onClick={closeMobile}
+            >
+              {label}
+            </NavLink>
+          ))}
         </div>
+
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <button 
-            id="theme-toggle" 
-            className="theme-toggle-btn" 
+          <button
+            id="theme-toggle"
+            className="theme-toggle-btn"
             aria-label="Toggle theme"
             onClick={toggleTheme}
           >
             {theme === 'dark' ? (
-              <span id="sun-wrapper"><Sun style={{ width: '20px', height: '20px' }} /></span>
+              <Sun style={{ width: '20px', height: '20px' }} />
             ) : (
-              <span id="moon-wrapper"><Moon style={{ width: '20px', height: '20px' }} /></span>
+              <Moon style={{ width: '20px', height: '20px' }} />
             )}
           </button>
-          <button 
-            className="mobile-menu-btn" 
-            id="mobile-menu-btn" 
+          <button
+            className="mobile-menu-btn"
+            id="mobile-menu-btn"
             aria-label="Toggle menu"
-            onClick={toggleMobileMenu}
+            aria-expanded={mobileMenuOpen}
+            onClick={() => setMobileMenuOpen(prev => !prev)}
           >
             {mobileMenuOpen ? (
               <X style={{ width: '20px', height: '20px' }} />

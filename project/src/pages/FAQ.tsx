@@ -14,7 +14,8 @@ export const FAQ: React.FC = () => {
   const [openItems, setOpenItems] = useState<Record<number, boolean>>({});
 
   useEffect(() => {
-    window.scrollTo(0, 0);
+    document.title = 'FAQ — Konvert';
+    return () => { document.title = 'Konvert'; };
   }, []);
 
   const faqData: FAQItem[] = [

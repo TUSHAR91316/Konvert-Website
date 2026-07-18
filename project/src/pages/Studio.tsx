@@ -5,7 +5,8 @@ import { ConverterWidget } from '../components/ConverterWidget';
 
 export const Studio: React.FC = () => {
   useEffect(() => {
-    window.scrollTo(0, 0);
+    document.title = 'Local Conversion Studio — Konvert';
+    return () => { document.title = 'Konvert'; };
   }, []);
 
   return (

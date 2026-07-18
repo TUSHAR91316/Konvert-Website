@@ -4,8 +4,8 @@ import { ArrowLeft, Shield } from 'lucide-react';
 
 export const PrivacyPolicy: React.FC = () => {
   useEffect(() => {
-    // Scroll to top on mount
-    window.scrollTo(0, 0);
+    document.title = 'Privacy Policy — Konvert';
+    return () => { document.title = 'Konvert'; };
   }, []);
 
   return (

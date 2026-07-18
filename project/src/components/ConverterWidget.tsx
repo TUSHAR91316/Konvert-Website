@@ -29,7 +29,7 @@ export const ConverterWidget: React.FC = () => {
     }
 
     const fileObjects = validImages.map(file => ({
-      id: Math.random().toString(36).substr(2, 9),
+      id: Math.random().toString(36).substring(2, 11),
       file,
       previewUrl: URL.createObjectURL(file),
       originalSize: file.size
