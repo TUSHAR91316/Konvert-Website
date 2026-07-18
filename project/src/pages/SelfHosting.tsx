@@ -39,7 +39,6 @@ export const SelfHosting: React.FC = () => {
   const dockerComposeCmd = `docker-compose up -d --build`;
   const runDockerCmd = `docker run -d -p 8080:8080 --name konvert-backend tushar91316/konvert-backend:latest`;
   const ngrokCmd = `ngrok http 8080 --url=your-domain.ngrok-free.app`;
-  const cloudflareCmd = `cloudflared tunnel --url http://localhost:8080`;
 
   return (
     <main className="page-container" style={{ paddingBottom: '4rem' }}>
