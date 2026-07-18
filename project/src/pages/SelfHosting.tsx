@@ -32,12 +32,14 @@ const CopyButton: React.FC<CopyBtnProps> = ({ text }) => {
 
 export const SelfHosting: React.FC = () => {
   useEffect(() => {
-    window.scrollTo(0, 0);
+    document.title = 'Self-Hosting Guide — Konvert';
+    return () => { document.title = 'Konvert'; };
   }, []);
 
-  const runDockerCmd = `docker run -d -p 5000:5000 --name konvert-backend tushar91316/konvert-backend:latest`;
-  const ngrokCmd = `ngrok http 5000`;
-  const cloudflareCmd = `cloudflared tunnel --url http://localhost:5000`;
+  const dockerComposeCmd = `docker-compose up -d --build`;
+  const runDockerCmd = `docker run -d -p 8080:8080 --name konvert-backend tushar91316/konvert-backend:latest`;
+  const ngrokCmd = `ngrok http 8080 --url=your-domain.ngrok-free.app`;
+  const cloudflareCmd = `cloudflared tunnel --url http://localhost:8080`;
 
   return (
     <main className="page-container" style={{ paddingBottom: '4rem' }}>
@@ -65,64 +67,76 @@ export const SelfHosting: React.FC = () => {
           <div>
             <h3 style={{ margin: 0, color: 'var(--text-main)' }}>Privacy-First Architecture</h3>
             <p style={{ margin: '0.5rem 0 0 0', fontSize: '0.95rem', color: 'var(--text-muted)' }}>
-              Unlike traditional SaaS apps, Konvert does not run a central cloud compiler. To translate complex documents, the mobile and desktop client connects directly to your private local Docker instance over a secure tunnel. Your documents never touch our infrastructure.
+              Unlike traditional SaaS apps, Konvert does not run a central cloud compiler. To translate complex documents, the mobile client connects directly to your private local Docker instance over a secure tunnel. Your documents never touch our infrastructure.
             </p>
           </div>
         </div>
       </div>
 
+      {/* Prerequisites */}
+      <section className="step-section reveal visible" style={{ marginBottom: '3rem' }}>
+        <h2>Prerequisites</h2>
+        <ul style={{ paddingLeft: '1.5rem', color: 'var(--text-muted)', display: 'grid', gap: '0.5rem' }}>
+          <li><strong>Docker Desktop</strong>: Install and ensure Docker is running on your host machine.</li>
+          <li><strong>Active Internet Connection</strong>: Required to expose and route traffic from your mobile device to your home server.</li>
+        </ul>
+      </section>
+
       {/* Step 1 */}
       <section className="step-section reveal visible" style={{ marginBottom: '3rem' }}>
-        <h2>1. Spin Up the Docker Container</h2>
-        <p>Ensure you have Docker Desktop running. Open your CLI terminal and execute the official Konvert conversion image. It wraps a microservice API around LibreOffice to parse files dynamically:</p>
-        <div className="terminal-box" style={{ background: 'var(--card-bg)', border: 'var(--glass-border)', padding: '1rem', borderRadius: '0.75rem', position: 'relative', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', overflowX: 'auto', whiteSpace: 'nowrap' }}>
-            <Terminal className="text-emerald" style={{ flexShrink: 0, width: '18px', height: '18px' }} />
-            <code style={{ fontFamily: 'monospace', fontSize: '0.9rem', color: 'var(--text-main)' }}>{runDockerCmd}</code>
-          </div>
-          <CopyButton text={runDockerCmd} />
-        </div>
-        <p style={{ marginTop: '0.75rem', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
-          This runs the backend on container port 5000 and exposes it to <code style={{ fontFamily: 'monospace' }}>http://localhost:5000</code>.
-        </p>
+        <h2>1. Claim Your Free Static Domain (Ngrok)</h2>
+        <p>To let the mobile app securely reach your home server from anywhere, we create an HTTPS tunnel using Ngrok:</p>
+        <ol style={{ paddingLeft: '1.5rem', color: 'var(--text-muted)', display: 'grid', gap: '0.5rem' }}>
+          <li>Sign up at <a href="https://dashboard.ngrok.com/" target="_blank" rel="noreferrer" style={{ color: 'var(--text-main)', textDecoration: 'underline' }}>ngrok.com</a> (completely free).</li>
+          <li>Retrieve your <strong>Auth Token</strong> from the dashboard.</li>
+          <li>Claim a <strong>Free Static Domain</strong> (e.g., <code style={{ fontFamily: 'monospace' }}>your-domain.ngrok-free.app</code>) under the Domains section.</li>
+        </ol>
       </section>
 
       {/* Step 2 */}
       <section className="step-section reveal visible" style={{ marginBottom: '3rem' }}>
-        <h2>2. Expose Container via Secure Tunnel</h2>
-        <p>If you're using the Windows Desktop client, you can connect directly to local host. For the Android App to access the localhost API, you must route it through a secure tunnel service like Ngrok or Cloudflare:</p>
-        
+        <h2>2. Start the Backend Server</h2>
+        <p>Choose <strong>one</strong> of the two methods below to spin up your backend:</p>
+
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem', marginTop: '1.5rem' }}>
-          {/* Ngrok Option */}
+          {/* Method A */}
           <div className="card" style={{ background: 'var(--card-bg)', border: 'var(--glass-border)', padding: '1.5rem', borderRadius: '1rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
-              <Zap style={{ color: '#3b82f6', width: '22px', height: '22px' }} />
-              <h3 style={{ margin: 0 }}>Option A: Ngrok Tunnel</h3>
+              <Zap style={{ color: '#10b981', width: '22px', height: '22px' }} />
+              <h3 style={{ margin: 0 }}>Method A: Docker Compose (Recommended)</h3>
             </div>
-            <p style={{ fontSize: '0.95rem', color: 'var(--text-muted)' }}>Spin up a free Ngrok HTTP tunnel mapping to port 5000:</p>
+            <p style={{ fontSize: '0.95rem', color: 'var(--text-muted)' }}>
+              Automatically configures both the backend API and the Ngrok tunnel inside Docker. No local Ngrok CLI installation required:
+            </p>
+            <ol style={{ paddingLeft: '1.25rem', fontSize: '0.9rem', color: 'var(--text-muted)', margin: '0.5rem 0' }}>
+              <li>Download <strong>backend.zip</strong> from Releases.</li>
+              <li>Rename <code style={{ fontFamily: 'monospace' }}>.env.example</code> to <code style={{ fontFamily: 'monospace' }}>.env</code> and add your Ngrok credentials.</li>
+              <li>Run the stack in terminal:</li>
+            </ol>
+            <div className="terminal-box" style={{ background: 'rgba(0,0,0,0.2)', padding: '0.75rem', borderRadius: '0.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem' }}>
+              <code style={{ fontFamily: 'monospace', fontSize: '0.85rem' }}>{dockerComposeCmd}</code>
+              <CopyButton text={dockerComposeCmd} />
+            </div>
+          </div>
+
+          {/* Method B */}
+          <div className="card" style={{ background: 'var(--card-bg)', border: 'var(--glass-border)', padding: '1.5rem', borderRadius: '1rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
+              <CloudLightning style={{ color: '#3b82f6', width: '22px', height: '22px' }} />
+              <h3 style={{ margin: 0 }}>Method B: Standalone Docker (Manual)</h3>
+            </div>
+            <p style={{ fontSize: '0.95rem', color: 'var(--text-muted)' }}>
+              Build and run the backend container manually, then expose it using local tunnel CLIs on your host machine:
+            </p>
+            <div className="terminal-box" style={{ background: 'rgba(0,0,0,0.2)', padding: '0.75rem', borderRadius: '0.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+              <code style={{ fontFamily: 'monospace', fontSize: '0.8rem' }}>{runDockerCmd}</code>
+              <CopyButton text={runDockerCmd} />
+            </div>
+            <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', margin: '0.5rem 0' }}>Expose port 8080 manually:</p>
             <div className="terminal-box" style={{ background: 'rgba(0,0,0,0.2)', padding: '0.75rem', borderRadius: '0.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem' }}>
               <code style={{ fontFamily: 'monospace', fontSize: '0.85rem' }}>{ngrokCmd}</code>
               <CopyButton text={ngrokCmd} />
             </div>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '0.75rem' }}>
-              Ngrok will output a forwarding link (e.g. <code style={{ fontFamily: 'monospace' }}>https://xxxx.ngrok-free.app</code>).
-            </p>
-          </div>
-
-          {/* Cloudflare Option */}
-          <div className="card" style={{ background: 'var(--card-bg)', border: 'var(--glass-border)', padding: '1.5rem', borderRadius: '1rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
-              <CloudLightning style={{ color: '#f97316', width: '22px', height: '22px' }} />
-              <h3 style={{ margin: 0 }}>Option B: Cloudflare Tunnel</h3>
-            </div>
-            <p style={{ fontSize: '0.95rem', color: 'var(--text-muted)' }}>Alternatively, use Cloudflare's free quick tunnel CLI:</p>
-            <div className="terminal-box" style={{ background: 'rgba(0,0,0,0.2)', padding: '0.75rem', borderRadius: '0.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem' }}>
-              <code style={{ fontFamily: 'monospace', fontSize: '0.85rem' }}>{cloudflareCmd}</code>
-              <CopyButton text={cloudflareCmd} />
-            </div>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '0.75rem' }}>
-              Cloudflare will display a random hostname (e.g. <code style={{ fontFamily: 'monospace' }}>https://xxxx.trycloudflare.com</code>).
-            </p>
           </div>
         </div>
       </section>
@@ -132,40 +146,38 @@ export const SelfHosting: React.FC = () => {
         <h2>3. Paste Tunnel URL in Konvert App</h2>
         <p>Connect your client application to your newly created secure backend tunnel:</p>
         <ol style={{ paddingLeft: '1.5rem', color: 'var(--text-muted)', display: 'grid', gap: '0.5rem' }}>
-          <li>Open the Konvert mobile application on Android, or the desktop app on Windows.</li>
-          <li>Navigate to <strong>Settings</strong> &gt; <strong>Server Settings</strong>.</li>
-          <li>Paste your forwarding tunnel URL (e.g. <code style={{ fontFamily: 'monospace' }}>https://xxxx.ngrok-free.app</code>) into the backend server host address input.</li>
-          <li>Click <strong>Test Connection</strong>. When it lights up green, you are fully set up to compile PDF documents!</li>
+          <li>Open the Konvert mobile application on your device.</li>
+          <li>Navigate to <strong>Settings</strong> or tap the <strong>System Status</strong> card on the Dashboard.</li>
+          <li>Paste your forwarding tunnel URL (e.g. <code style={{ fontFamily: 'monospace' }}>https://xxxx.ngrok-free.app</code>) into the "Backend URL" field.</li>
+          <li>Tap <strong>Test Connection</strong>. Once it connects successfully, you are fully set up to convert documents!</li>
         </ol>
-        
-        <div style={{ marginTop: '1.5rem', padding: '1rem', background: 'rgba(16, 185, 129, 0.08)', border: '1px solid rgba(16, 185, 129, 0.25)', borderRadius: '0.75rem', fontSize: '0.95rem' }}>
-          <p style={{ margin: 0, color: 'var(--text-main)', lineHeight: 1.5 }}>
-            <strong>How to test your connection:</strong> To verify your backend is working, simply open the Konvert mobile app, paste your URL into the Settings screen, and try converting a document!
-          </p>
-        </div>
       </section>
 
       {/* Troubleshooting card */}
       <section className="step-section reveal visible">
-        <h2>Troubleshooting Connections</h2>
+        <h2>Troubleshooting & Logs</h2>
         <div className="card" style={{ background: 'var(--card-bg)', border: 'var(--glass-border)', padding: '2rem', borderRadius: '1.5rem' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '2rem' }}>
             <div>
               <h4 style={{ margin: '0 0 0.5rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <Network className="text-emerald" style={{ width: '18px', height: '18px' }} />
-                Cors Preflight Blocked
+                Checking Server Health
               </h4>
               <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-muted)' }}>
-                Our backend container has wildcard headers pre-enabled. If you use custom proxies, ensure headers like `Access-Control-Allow-Origin` pass wildcard permissions properly.
+                Open <code style={{ fontFamily: 'monospace' }}>https://your-domain.ngrok-free.app/health</code> in a browser. It should return <code style={{ fontFamily: 'monospace' }}>{"{"}"status": "ok"{"}"}</code>. If it does not, check if your local server is running.
               </p>
             </div>
             <div>
               <h4 style={{ margin: '0 0 0.5rem 0', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <Terminal className="text-emerald" style={{ width: '18px', height: '18px' }} />
-                Ngrok Web Interstitial
+                Reading Docker Logs
               </h4>
               <p style={{ margin: 0, fontSize: '0.9rem', color: 'var(--text-muted)' }}>
-                By default, Ngrok shows a browser warning page. Our mobile clients handle custom request headers to bypass this. If test queries fail, ensure you are sending the `ngrok-skip-browser-warning` header value.
+                If you encounter conversion failures, check your container logs:
+                <br />
+                • Compose: <code style={{ fontFamily: 'monospace' }}>docker-compose logs -f</code>
+                <br />
+                • Standalone: <code style={{ fontFamily: 'monospace' }}>docker logs -f konvert-backend</code>
               </p>
             </div>
           </div>
