@@ -20,6 +20,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# ── Directories ─────────────────────────────────────────────────────────────
+UPLOAD_DIR = "/tmp/uploads"
+OUTPUT_DIR = "/tmp/outputs"
+
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+# ── Health Endpoints ────────────────────────────────────────────────────────
 @app.get("/health")
 async def health_check():
     return {"status": "ok"}
@@ -37,6 +45,7 @@ async def health_details():
         "disk_free_gb": disk.free // (1024 * 1024 * 1024)
     }
 
+# ── PDF Merging Endpoint ───────────────────────────────────────────────────
 @app.post("/merge-pdfs")
 async def merge_pdfs(files: list[UploadFile] = File(...)):
     """Merge multiple PDF files into a single PDF, returned in upload order."""
@@ -98,12 +107,7 @@ async def merge_pdfs(files: list[UploadFile] = File(...)):
             if os.path.exists(p):
                 os.remove(p)
 
-UPLOAD_DIR = "/tmp/uploads"
-OUTPUT_DIR = "/tmp/outputs"
-
-os.makedirs(UPLOAD_DIR, exist_ok=True)
-os.makedirs(OUTPUT_DIR, exist_ok=True)
-
+# ── Document Conversion Endpoint ─────────────────────────────────────────────
 @app.post("/convert")
 async def convert_file(file: UploadFile = File(...), target_format: str = "pdf"):
     # 1. Save uploaded file
@@ -119,9 +123,6 @@ async def convert_file(file: UploadFile = File(...), target_format: str = "pdf")
     with open(input_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
         
-    # 2. Determine conversion command
-    # Simple LibreOffice conversion: --convert-to pdf
-    
     # Validation: valid formats?
     valid_targets = ["pdf", "docx", "doc", "odt", "jpg", "png"]
     if target_format not in valid_targets:
@@ -137,12 +138,12 @@ async def convert_file(file: UploadFile = File(...), target_format: str = "pdf")
     success = False
     try:
         # 3. Run LibreOffice (headless)
-        # unoconv or libreoffice directly
         cmd = [
             "libreoffice",
             "--headless",
             "--convert-to", target_format,
             "--outdir", OUTPUT_DIR,
+            "--",
             input_path
         ]
         
@@ -165,12 +166,7 @@ async def convert_file(file: UploadFile = File(...), target_format: str = "pdf")
             )
             
         # 4. Find output file
-        # LibreOffice typically keeps the basename and changes extension
         base_name = os.path.splitext(input_filename)[0]
-        # output filename might vary slightly depending on LibreOffice version/format
-        # e.g. input.docx -> input.pdf
-        
-        # We need to find the file in OUTPUT_DIR that matches the pattern
         expected_output_filename = f"{base_name}.{target_format}"
         output_path = os.path.join(OUTPUT_DIR, expected_output_filename)
         
