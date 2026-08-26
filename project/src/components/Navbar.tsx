@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { Zap, Moon, Sun, Menu, X } from 'lucide-react';
+import { Zap, Moon, Sun, Menu, X, MessageSquare } from 'lucide-react';
 
-export const Navbar: React.FC = () => {
+interface NavbarProps {
+  onOpenFeedback?: () => void;
+}
+
+export const Navbar: React.FC<NavbarProps> = ({ onOpenFeedback }) => {
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     const saved = localStorage.getItem('theme');
     if (saved === 'dark' || saved === 'light') return saved;
@@ -27,11 +31,22 @@ export const Navbar: React.FC = () => {
   const toggleTheme = () => setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
   const closeMobile = () => setMobileMenuOpen(false);
 
+  useEffect(() => {
+    if (!mobileMenuOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        closeMobile();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [mobileMenuOpen]);
+
   return (
     <nav className={`navbar${scrolled ? ' scrolled' : ''}`}>
       <div className="container nav-container">
         <Link to="/" className="nav-brand" onClick={closeMobile}>
-          <Zap className="text-emerald" style={{ width: '24px', height: '24px' }} />
+          <Zap className="text-emerald" style={{ width: '22px', height: '22px' }} />
           <span>Konvert</span>
         </Link>
 
@@ -43,6 +58,7 @@ export const Navbar: React.FC = () => {
             { to: '/self-hosting', label: 'Self-Hosting' },
             { to: '/community', label: 'Community' },
             { to: '/faq', label: 'FAQ' },
+            { to: '/feedback', label: 'Feedback' },
           ].map(({ to, label }) => (
             <NavLink
               key={to}
@@ -57,6 +73,18 @@ export const Navbar: React.FC = () => {
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          {onOpenFeedback && (
+            <button
+              onClick={onOpenFeedback}
+              className="btn btn-secondary-solid"
+              style={{ padding: '0.45rem 0.75rem', fontSize: '0.85rem' }}
+              title="Share Feedback"
+            >
+              <MessageSquare style={{ width: '15px', height: '15px', color: 'var(--emerald-500)' }} />
+              <span className="feedback-nav-text">Feedback</span>
+            </button>
+          )}
+
           <button
             id="theme-toggle"
             className="theme-toggle-btn"
@@ -64,11 +92,12 @@ export const Navbar: React.FC = () => {
             onClick={toggleTheme}
           >
             {theme === 'dark' ? (
-              <Sun style={{ width: '20px', height: '20px' }} />
+              <Sun style={{ width: '18px', height: '18px' }} />
             ) : (
-              <Moon style={{ width: '20px', height: '20px' }} />
+              <Moon style={{ width: '18px', height: '18px' }} />
             )}
           </button>
+
           <button
             className="mobile-menu-btn"
             id="mobile-menu-btn"
@@ -77,9 +106,9 @@ export const Navbar: React.FC = () => {
             onClick={() => setMobileMenuOpen(prev => !prev)}
           >
             {mobileMenuOpen ? (
-              <X style={{ width: '20px', height: '20px' }} />
+              <X style={{ width: '18px', height: '18px' }} />
             ) : (
-              <Menu style={{ width: '20px', height: '20px' }} />
+              <Menu style={{ width: '18px', height: '18px' }} />
             )}
           </button>
         </div>

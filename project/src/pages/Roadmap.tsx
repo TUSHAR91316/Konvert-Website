@@ -92,7 +92,7 @@ export const Roadmap: React.FC = () => {
         data = JSON.parse(cachedData);
       } else {
         const res = await fetch(
-          'https://api.github.com/repos/TUSHAR91316/Konvert-Website/releases?per_page=30',
+          'https://api.github.com/repos/TUSHAR91316/Konvert/releases?per_page=30',
           { headers: { 'Accept': 'application/vnd.github+json' } }
         );
         if (!res.ok) throw new Error(`GitHub API error: ${res.status}`);
@@ -111,8 +111,9 @@ export const Roadmap: React.FC = () => {
         latest: data[0]?.tag_name ?? '—',
         downloads: totalDownloads >= 1000 ? (totalDownloads / 1000).toFixed(1) + 'k' : String(totalDownloads)
       });
-    } catch (err: any) {
-      setError(err.message || 'Could not reach GitHub API.');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Could not reach GitHub API.';
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -176,7 +177,7 @@ export const Roadmap: React.FC = () => {
                 <button className="retry-btn" onClick={loadReleases} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
                   <RefreshCw style={{ width: '16px', height: '16px' }} /> Retry
                 </button>
-                <a href="https://github.com/TUSHAR91316/Konvert-Website/releases" target="_blank" rel="noopener noreferrer" className="retry-btn" style={{ textDecoration: 'none', background: 'transparent', border: '2px solid var(--border-color)', color: 'var(--text-main)', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+                <a href="https://github.com/TUSHAR91316/Konvert/releases" target="_blank" rel="noopener noreferrer" className="retry-btn" style={{ textDecoration: 'none', background: 'transparent', border: '2px solid var(--border-color)', color: 'var(--text-main)', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
                   <GithubIcon style={{ width: '16px', height: '16px' }} /> View on GitHub
                 </a>
               </div>

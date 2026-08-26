@@ -48,7 +48,7 @@ export const PrivacyPolicy: React.FC = () => {
           <p>We may update this Privacy Policy periodically to reflect new features or platform capabilities. Since we do not collect your contact details, we encourage you to review this page occasionally for the latest information on our privacy practices.</p>
 
           <h2>7. Contact Us</h2>
-          <p>If you have any questions or concerns regarding our Privacy Policy or data processing practices, please reach out via our GitHub repository: <a href="https://github.com/TUSHAR91316/Konvert-Website" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--emerald-500)', textDecoration: 'none' }}>Konvert GitHub</a>.</p>
+          <p>If you have any questions or concerns regarding our Privacy Policy or data processing practices, please reach out via our GitHub repository: <a href="https://github.com/TUSHAR91316/Konvert" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--emerald-500)', textDecoration: 'none' }}>Konvert GitHub</a>.</p>
         </div>
       </div>
     </main>
