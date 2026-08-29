@@ -4,8 +4,14 @@ import {
   Send, ExternalLink, Copy, Check, ShieldCheck 
 } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
-
-export type FeedbackCategory = 'bug' | 'feature' | 'ui' | 'perf' | 'general';
+import { useModal } from '../hooks/useModal';
+import type { FeedbackCategory } from '../types/feedback';
+import { 
+  RATING_LABELS, 
+  formatFeedbackMarkdown, 
+  createGitHubIssueUrl, 
+  saveFeedbackToStorage 
+} from '../services/feedbackService';
 
 interface FeedbackModalProps {
   isOpen: boolean;
@@ -20,8 +26,6 @@ const CATEGORIES: { id: FeedbackCategory; label: string; icon: React.FC<{ style?
   { id: 'perf', label: 'Performance', icon: Zap },
   { id: 'general', label: 'General', icon: MessageSquare },
 ];
-
-const RATING_LABELS = ['Needs Work', 'Below Average', 'Average', 'Good', 'Excellent'];
 
 export const FeedbackModal: React.FC<FeedbackModalProps> = ({
   isOpen,
@@ -40,57 +44,9 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  React.useEffect(() => {
-    if (!isOpen) return;
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose();
-      }
-    };
-
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    window.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      document.body.style.overflow = originalOverflow;
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [isOpen, onClose]);
+  useModal({ isOpen, onClose });
 
   if (!isOpen) return null;
-
-  const getDiagnostics = () => {
-    return {
-      os: navigator.platform || 'Unknown OS',
-      userAgent: navigator.userAgent,
-      screen: `${window.innerWidth}x${window.innerHeight}`,
-      pathname: window.location.pathname,
-      timestamp: new Date().toISOString()
-    };
-  };
-
-  const formatMarkdownReport = () => {
-    const diag = getDiagnostics();
-    const catLabel = CATEGORIES.find(c => c.id === category)?.label || category;
-    return `### [Feedback] ${title || 'Konvert Feedback'}
-
-**Category**: ${catLabel}
-**Rating**: ${rating}/5 (${RATING_LABELS[rating - 1]})
-${email ? `**Contact**: ${email}` : ''}
-
-#### Description:
-${description || 'No additional details provided.'}
-
-${includeDiagnostics ? `#### Environment Diagnostics:
-- **Route**: \`${diag.pathname}\`
-- **Resolution**: \`${diag.screen}\`
-- **Platform**: \`${diag.os}\`
-- **User Agent**: \`${diag.userAgent}\`
-- **Timestamp**: \`${diag.timestamp}\`` : ''}
-`;
-  };
 
   const handleInAppSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,79 +58,56 @@ ${includeDiagnostics ? `#### Environment Diagnostics:
     setIsSubmitting(true);
 
     try {
-      const feedbackRecord = {
-        id: Math.random().toString(36).substring(2, 9),
-        category,
-        rating,
-        title: title.trim(),
-        description: description.trim(),
-        email: email.trim(),
-        diagnostics: includeDiagnostics ? getDiagnostics() : null,
-        date: new Date().toISOString()
-      };
-
-      const existing = JSON.parse(localStorage.getItem('konvert_user_feedback') || '[]');
-      existing.unshift(feedbackRecord);
-      localStorage.setItem('konvert_user_feedback', JSON.stringify(existing.slice(0, 50)));
-
+      saveFeedbackToStorage(category, rating, title, description, email, includeDiagnostics);
+      showToast('Thank you! Your feedback has been recorded locally.', 'success');
+      setTitle('');
+      setDescription('');
+      setEmail('');
       setTimeout(() => {
-        setIsSubmitting(false);
-        showToast('Feedback submitted successfully. Thank you for helping improve Konvert!', 'success');
         onClose();
-        // Reset state
-        setTitle('');
-        setDescription('');
-        setEmail('');
-      }, 400);
+      }, 600);
     } catch {
+      showToast('Failed to save feedback.', 'error');
+    } finally {
       setIsSubmitting(false);
-      showToast('Feedback saved locally. Thank you!', 'success');
-      onClose();
     }
   };
 
   const handleOpenGitHubIssue = () => {
     if (!description.trim()) {
-      showToast('Please enter a brief description first.', 'error');
+      showToast('Please provide a short description first.', 'error');
       return;
     }
 
-    const issueTitle = encodeURIComponent(`[${category.toUpperCase()}] ${title.trim() || 'User Feedback'}`);
-    const issueBody = encodeURIComponent(formatMarkdownReport());
-    const labels = category === 'bug' ? 'bug' : category === 'feature' ? 'enhancement' : 'feedback';
-    const url = `https://github.com/TUSHAR91316/Konvert/issues/new?title=${issueTitle}&body=${issueBody}&labels=${labels}`;
-    
+    const url = createGitHubIssueUrl(category, rating, title, description, email, includeDiagnostics);
     window.open(url, '_blank', 'noopener,noreferrer');
     showToast('Opening GitHub Issue template...', 'info');
   };
 
   const handleCopyMarkdown = async () => {
     try {
-      await navigator.clipboard.writeText(formatMarkdownReport());
+      const markdown = formatFeedbackMarkdown(category, rating, title, description, email, includeDiagnostics);
+      await navigator.clipboard.writeText(markdown);
       setCopied(true);
       showToast('Feedback formatted as Markdown and copied to clipboard!', 'success');
-      setTimeout(() => setCopied(false), 2000);
+      setTimeout(() => setCopied(false), 2500);
     } catch {
-      showToast('Failed to copy to clipboard', 'error');
+      showToast('Failed to copy feedback to clipboard', 'error');
     }
   };
 
   return (
-    <div className="modal-overlay" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="feedback-modal-title">
-      <div className="modal-card solid-card" onClick={e => e.stopPropagation()}>
-        {/* Header */}
+    <div className="modal-overlay" onClick={onClose} role="dialog" aria-modal="true">
+      <div className="modal-card" onClick={e => e.stopPropagation()}>
+        {/* Modal Header */}
         <div className="modal-header">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <div className="icon-badge">
               <MessageSquare style={{ width: '18px', height: '18px', color: 'var(--emerald-500)' }} />
             </div>
             <div>
-              <h2 id="feedback-modal-title" style={{ margin: 0, fontSize: '1.25rem', fontWeight: 700 }}>
-                Share Your Feedback
-              </h2>
-              <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-muted)' }}>
-                Help shape Konvert. Bugs, feature suggestions, or general input.
-              </p>
+              <h2 style={{ fontSize: '1.2rem', fontWeight: 700, margin: 0 }}>Share Feedback &amp; Suggestions</h2>
+              <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-muted)' }}>Help us build a better, privacy-first converter</p>
             </div>
           </div>
           <button onClick={onClose} className="modal-close-btn" aria-label="Close modal">
@@ -182,6 +115,7 @@ ${includeDiagnostics ? `#### Environment Diagnostics:
           </button>
         </div>
 
+        {/* Feedback Form */}
         <form onSubmit={handleInAppSubmit} className="feedback-form">
           {/* Category Tabs */}
           <div className="form-group">
@@ -189,15 +123,14 @@ ${includeDiagnostics ? `#### Environment Diagnostics:
             <div className="category-segmented-grid">
               {CATEGORIES.map(cat => {
                 const Icon = cat.icon;
-                const isSelected = category === cat.id;
                 return (
                   <button
                     key={cat.id}
                     type="button"
-                    className={`category-pill-btn ${isSelected ? 'active' : ''}`}
+                    className={`category-pill-btn${category === cat.id ? ' active' : ''}`}
                     onClick={() => setCategory(cat.id)}
                   >
-                    <Icon style={{ width: '15px', height: '15px' }} />
+                    <Icon style={{ width: '14px', height: '14px' }} />
                     <span>{cat.label}</span>
                   </button>
                 );
@@ -207,131 +140,143 @@ ${includeDiagnostics ? `#### Environment Diagnostics:
 
           {/* Rating */}
           <div className="form-group">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
-              <label className="form-label" style={{ margin: 0 }}>Overall Experience</label>
-              <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--emerald-500)' }}>
-                {RATING_LABELS[(hoverRating || rating) - 1]} ({hoverRating || rating}/5)
+            <label className="form-label" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span>How is your experience with Konvert?</span>
+              <span style={{ fontSize: '0.8rem', color: 'var(--emerald-500)', fontWeight: 600 }}>
+                {RATING_LABELS[(hoverRating ?? rating) - 1]}
               </span>
-            </div>
+            </label>
             <div className="star-rating-row" onMouseLeave={() => setHoverRating(null)}>
-              {[1, 2, 3, 4, 5].map(val => {
-                const isFilled = (hoverRating !== null ? hoverRating : rating) >= val;
-                return (
-                  <button
-                    key={val}
-                    type="button"
-                    className="star-btn"
-                    onClick={() => setRating(val)}
-                    onMouseEnter={() => setHoverRating(val)}
-                    aria-label={`Rate ${val} out of 5 stars`}
-                  >
-                    <Star
-                      style={{
-                        width: '24px',
-                        height: '24px',
-                        fill: isFilled ? '#eab308' : 'none',
-                        stroke: isFilled ? '#eab308' : 'var(--border-color)',
-                        transition: 'all 0.15s ease'
-                      }}
-                    />
-                  </button>
-                );
-              })}
+              {[1, 2, 3, 4, 5].map(star => (
+                <button
+                  key={star}
+                  type="button"
+                  className="star-btn"
+                  onMouseEnter={() => setHoverRating(star)}
+                  onClick={() => setRating(star)}
+                  aria-label={`Rate ${star} star`}
+                >
+                  <Star
+                    style={{
+                      width: '24px',
+                      height: '24px',
+                      fill: star <= (hoverRating ?? rating) ? '#f59e0b' : 'none',
+                      color: star <= (hoverRating ?? rating) ? '#f59e0b' : 'var(--text-muted)',
+                      transition: 'color 0.15s ease, fill 0.15s ease'
+                    }}
+                  />
+                </button>
+              ))}
             </div>
           </div>
 
-          {/* Subject / Title */}
+          {/* Title */}
           <div className="form-group">
-            <label htmlFor="feedback-title" className="form-label">Subject / Title</label>
+            <label className="form-label" htmlFor="modal-feedback-title">Title / Topic (Optional)</label>
             <input
-              id="feedback-title"
+              id="modal-feedback-title"
               type="text"
               className="form-input"
-              placeholder="Brief summary (e.g. Add dark mode preference persistence)"
+              placeholder="e.g., Image compression target size slider"
               value={title}
               onChange={e => setTitle(e.target.value)}
-              maxLength={120}
             />
           </div>
 
-          {/* Detailed Message */}
+          {/* Description */}
           <div className="form-group">
-            <label htmlFor="feedback-desc" className="form-label">
-              Details <span style={{ color: '#ef4444' }}>*</span>
+            <label className="form-label" htmlFor="modal-feedback-description">
+              Description <span style={{ color: '#ef4444' }}>*</span>
             </label>
             <textarea
-              id="feedback-desc"
+              id="modal-feedback-description"
+              required
               className="form-textarea"
-              rows={4}
-              placeholder="What worked well, what was confusing, or steps to reproduce a bug..."
+              rows={3}
+              placeholder="Tell us what went wrong or what feature you would love to see..."
               value={description}
               onChange={e => setDescription(e.target.value)}
-              required
             />
           </div>
 
-          {/* Optional Email */}
+          {/* Email (Optional) */}
           <div className="form-group">
-            <label htmlFor="feedback-email" className="form-label">
-              Contact Email <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 400 }}>(optional)</span>
+            <label className="form-label" htmlFor="modal-feedback-email">
+              Contact Email (Optional)
             </label>
             <input
-              id="feedback-email"
+              id="modal-feedback-email"
               type="email"
               className="form-input"
-              placeholder="name@example.com (only if you'd like a response)"
+              placeholder="your@email.com (if you would like us to follow up)"
               value={email}
               onChange={e => setEmail(e.target.value)}
             />
           </div>
 
-          {/* Environment Diagnostics Toggle */}
+          {/* Diagnostics toggle */}
           <div className="diagnostics-box">
             <label className="diagnostics-toggle-label">
               <input
                 type="checkbox"
                 checked={includeDiagnostics}
                 onChange={e => setIncludeDiagnostics(e.target.checked)}
-                style={{ accentColor: 'var(--emerald-500)', cursor: 'pointer' }}
+                style={{ accentColor: 'var(--emerald-500)', width: '16px', height: '16px' }}
               />
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem' }}>
-                <ShieldCheck style={{ width: '16px', height: '16px', color: 'var(--emerald-500)' }} />
-                <span>Attach anonymous environment diagnostics (Browser, OS, Screen resolution)</span>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <span style={{ fontSize: '0.85rem', color: 'var(--text-main)', fontWeight: 500 }}>
+                  Include anonymous diagnostics
+                </span>
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                  OS, screen resolution, browser version (helps debug faster)
+                </span>
               </div>
             </label>
           </div>
 
-          {/* Action Button Suite */}
+          {/* Actions */}
           <div className="feedback-actions">
             <button
               type="submit"
               disabled={isSubmitting}
               className="btn btn-primary"
-              style={{ flex: 1, padding: '0.75rem 1.25rem', fontSize: '0.95rem' }}
+              style={{ flex: 1 }}
             >
-              <Send style={{ width: '16px', height: '16px' }} />
-              <span>{isSubmitting ? 'Sending...' : 'Submit Feedback'}</span>
+              <Send style={{ width: '15px', height: '15px' }} />
+              <span>{isSubmitting ? 'Sending...' : 'Submit In-App'}</span>
             </button>
 
             <button
               type="button"
               onClick={handleOpenGitHubIssue}
               className="btn btn-secondary-solid"
-              title="Open structured issue on GitHub repository"
+              title="Open prefilled GitHub Issue"
             >
-              <ExternalLink style={{ width: '16px', height: '16px' }} />
               <span>GitHub Issue</span>
+              <ExternalLink style={{ width: '13px', height: '13px' }} />
             </button>
 
             <button
               type="button"
               onClick={handleCopyMarkdown}
-              className="btn btn-secondary-solid"
-              title="Copy formatted Markdown to clipboard"
+              className="btn btn-outline"
+              title="Copy markdown to clipboard"
             >
-              {copied ? <Check style={{ width: '16px', height: '16px', color: 'var(--emerald-500)' }} /> : <Copy style={{ width: '16px', height: '16px' }} />}
-              <span>{copied ? 'Copied' : 'Copy'}</span>
+              {copied ? (
+                <Check className="text-emerald" style={{ width: '15px', height: '15px' }} />
+              ) : (
+                <Copy style={{ width: '15px', height: '15px' }} />
+              )}
+              <span>{copied ? 'Copied' : 'MD'}</span>
             </button>
+          </div>
+
+          {/* Privacy Note */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', justifyContent: 'center', marginTop: '0.25rem' }}>
+            <ShieldCheck style={{ width: '14px', height: '14px', color: 'var(--emerald-500)' }} />
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+              Feedback is stored locally on your device with no remote trackers.
+            </span>
           </div>
         </form>
       </div>

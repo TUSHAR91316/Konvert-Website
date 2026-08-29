@@ -1,13 +1,11 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, ShieldCheck } from 'lucide-react';
 import { ConverterWidget } from '../components/ConverterWidget';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 export const Studio: React.FC = () => {
-  useEffect(() => {
-    document.title = 'Local Conversion Studio — Konvert';
-    return () => { document.title = 'Konvert'; };
-  }, []);
+  useDocumentTitle('Local Conversion Studio — Konvert');
 
   return (
     <main className="page-container" style={{ paddingBottom: '4rem' }}>

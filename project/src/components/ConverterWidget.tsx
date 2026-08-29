@@ -1,25 +1,17 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   Upload, ShieldAlert, CheckCircle2, Download, Sparkles, 
   X, Loader, FileText, Sliders, Trash2 
 } from 'lucide-react';
-import { jsPDF } from 'jspdf';
 import { useToast } from '../context/ToastContext';
-
-interface UploadedFile {
-  id: string;
-  file: File;
-  previewUrl: string;
-  compressedUrl?: string;
-  compressedSize?: number;
-  originalSize: number;
-}
-
-const QUALITY_PRESETS = [
-  { label: 'High Quality', value: 90 },
-  { label: 'Balanced', value: 75 },
-  { label: 'High Compression', value: 50 },
-];
+import { 
+  type UploadedFile, 
+  QUALITY_PRESETS, 
+  formatFileSize, 
+  compressSingleImage, 
+  compileImagesToPdf, 
+  revokeFileUrls 
+} from '../services/converterService';
 
 export const ConverterWidget: React.FC = () => {
   const { showToast } = useToast();
@@ -28,19 +20,16 @@ export const ConverterWidget: React.FC = () => {
   const [quality, setQuality] = useState<number>(75);
   const [processing, setProcessing] = useState<boolean>(false);
   const [dragActive, setDragActive] = useState<boolean>(false);
-  const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
+  const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const filesRef = useRef<UploadedFile[]>(files);
   filesRef.current = files;
 
   // Clean up object URLs on component unmount
-  React.useEffect(() => {
+  useEffect(() => {
     return () => {
-      filesRef.current.forEach(f => {
-        URL.revokeObjectURL(f.previewUrl);
-        if (f.compressedUrl) URL.revokeObjectURL(f.compressedUrl);
-      });
+      filesRef.current.forEach(revokeFileUrls);
     };
   }, []);
 
@@ -89,304 +78,144 @@ export const ConverterWidget: React.FC = () => {
     setFiles(prev => {
       const target = prev.find(f => f.id === id);
       if (target) {
-        URL.revokeObjectURL(target.previewUrl);
-        if (target.compressedUrl) URL.revokeObjectURL(target.compressedUrl);
+        revokeFileUrls(target);
       }
       return prev.filter(f => f.id !== id);
     });
   };
 
   const clearAll = () => {
-    files.forEach(f => {
-      URL.revokeObjectURL(f.previewUrl);
-      if (f.compressedUrl) URL.revokeObjectURL(f.compressedUrl);
-    });
+    files.forEach(revokeFileUrls);
     setFiles([]);
     setStatusMessage(null);
     showToast('Queue cleared', 'info');
   };
 
-  const formatSize = (bytes: number) => {
-    if (bytes < 1024) return bytes + ' B';
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
-  };
-
-  const loadImage = (src: string): Promise<HTMLImageElement> => {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.onload = () => resolve(img);
-      img.onerror = (err) => reject(err);
-      img.src = src;
-    });
-  };
-
-  // 1. Client-Side Image Compression
+  // Client-Side Image Compression
   const compressImages = async () => {
     if (files.length === 0) return;
     setProcessing(true);
 
     try {
       let totalSaved = 0;
-      const updatedFiles = await Promise.all(
-        files.map(async (fileObj) => {
-          const img = await loadImage(fileObj.previewUrl);
-          const canvas = document.createElement('canvas');
-          const ctx = canvas.getContext('2d');
-          if (!ctx) throw new Error('Canvas not supported');
+      const updatedFiles: UploadedFile[] = [];
 
-          canvas.width = img.naturalWidth;
-          canvas.height = img.naturalHeight;
-          ctx.drawImage(img, 0, 0);
-
-          return new Promise<UploadedFile>((resolve) => {
-            canvas.toBlob(
-              (blob) => {
-                if (!blob) {
-                  resolve(fileObj);
-                  return;
-                }
-                const compressedUrl = URL.createObjectURL(blob);
-                totalSaved += Math.max(0, fileObj.originalSize - blob.size);
-                resolve({
-                  ...fileObj,
-                  compressedUrl,
-                  compressedSize: blob.size
-                });
-              },
-              'image/jpeg',
-              quality / 100
-            );
-          });
-        })
-      );
+      for (const fileObj of files) {
+        const result = await compressSingleImage(fileObj, quality);
+        totalSaved += result.savedBytes;
+        updatedFiles.push(result.file);
+      }
 
       setFiles(updatedFiles);
-      showToast(`Compression finished! Reduced size by approx. ${formatSize(totalSaved)}`, 'success');
-      setStatusMessage({ type: 'success', text: `Images compressed at ${quality}% quality. Ready to download.` });
-    } catch (err) {
-      console.error(err);
-      showToast('Compression failed. Check image validity.', 'error');
+      setStatusMessage({
+        type: 'success',
+        text: `Successfully compressed ${files.length} images! Reduced total size by ${formatFileSize(totalSaved)}.`
+      });
+      showToast(`Compression finished! Saved ${formatFileSize(totalSaved)}`, 'success');
+    } catch {
+      setStatusMessage({
+        type: 'error',
+        text: 'An error occurred during local image processing.'
+      });
+      showToast('Image compression encountered an error', 'error');
     } finally {
       setProcessing(false);
     }
   };
 
-  // 2. Client-Side PDF Compiler
-  const compileToPDF = async () => {
+  // Client-Side PDF Compilation
+  const compilePdf = async () => {
     if (files.length === 0) return;
     setProcessing(true);
 
     try {
-      const doc = new jsPDF({
-        orientation: 'p',
-        unit: 'mm',
-        format: 'a4'
+      const pdfBlob = await compileImagesToPdf(files);
+      const blobUrl = URL.createObjectURL(pdfBlob);
+      const link = document.createElement('a');
+      link.href = blobUrl;
+      link.download = `konvert-compiled-${Date.now()}.pdf`;
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+
+      setStatusMessage({
+        type: 'success',
+        text: `Compiled ${files.length} pages into a unified PDF document.`
       });
-
-      const pdfWidth = 210;
-      const pdfHeight = 297;
-
-      for (let i = 0; i < files.length; i++) {
-        const fileObj = files[i];
-        const imgSrc = fileObj.compressedUrl || fileObj.previewUrl;
-        const img = await loadImage(imgSrc);
-
-        const imgWidth = img.naturalWidth;
-        const imgHeight = img.naturalHeight;
-        const ratio = imgWidth / imgHeight;
-
-        let finalWidth = pdfWidth - 20;
-        let finalHeight = finalWidth / ratio;
-
-        if (finalHeight > (pdfHeight - 20)) {
-          finalHeight = pdfHeight - 20;
-          finalWidth = finalHeight * ratio;
-        }
-
-        const x = (pdfWidth - finalWidth) / 2;
-        const y = (pdfHeight - finalHeight) / 2;
-
-        if (i > 0) doc.addPage();
-        doc.addImage(imgSrc, 'JPEG', x, y, finalWidth, finalHeight);
-      }
-
-      doc.save(`konvert_compiled_${Date.now()}.pdf`);
-      showToast('PDF compiled and downloaded automatically!', 'success');
-      setStatusMessage({ type: 'success', text: 'PDF compilation completed successfully.' });
-    } catch (err) {
-      console.error(err);
-      showToast('Failed to compile PDF document.', 'error');
+      showToast('PDF compiled & downloaded!', 'success');
+    } catch {
+      setStatusMessage({
+        type: 'error',
+        text: 'Failed to compile images to PDF document.'
+      });
+      showToast('Failed to compile PDF', 'error');
     } finally {
       setProcessing(false);
     }
   };
 
-  const triggerSingleDownload = (fileObj: UploadedFile) => {
-    if (!fileObj.compressedUrl) return;
-    const a = document.createElement('a');
-    a.href = fileObj.compressedUrl;
-    a.download = `optimized_${fileObj.file.name.replace(/\.[^/.]+$/, '')}.jpg`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    showToast(`Downloaded optimized ${fileObj.file.name}`, 'info');
-  };
+  const totalOriginalSize = files.reduce((acc, f) => acc + f.originalSize, 0);
+  const totalCompressedSize = files.reduce((acc, f) => acc + (f.compressedSize || f.originalSize), 0);
+  const hasCompressedFiles = files.some(f => f.compressedUrl);
 
   return (
-    <div className="solid-card" style={{ padding: '2rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
-        <h3 style={{ margin: 0, fontSize: '1.2rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <Sparkles className="text-emerald" style={{ width: '18px', height: '18px' }} />
-          <span>Image &amp; Document Queue</span>
-        </h3>
-        {files.length > 0 && (
-          <button
-            onClick={clearAll}
-            className="btn btn-secondary-solid"
-            style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem', color: '#ef4444' }}
-          >
-            <Trash2 style={{ width: '13px', height: '13px' }} />
-            <span>Clear All</span>
-          </button>
-        )}
-      </div>
+    <div className="card" style={{ padding: '2rem' }}>
+      {/* Hidden File Input */}
+      <input 
+        type="file" 
+        ref={fileInputRef} 
+        onChange={(e) => e.target.files && handleFiles(e.target.files)} 
+        multiple 
+        accept="image/png, image/jpeg, image/webp" 
+        style={{ display: 'none' }} 
+      />
 
-      {/* Drag & Drop Upload Zone */}
+      {/* Drag and Drop Zone */}
       <div 
         onDragOver={onDragOver}
         onDragLeave={onDragLeave}
         onDrop={onDrop}
         onClick={triggerInput}
         style={{
-          border: dragActive ? '2px solid var(--emerald-500)' : '2px dashed var(--border-color-strong)',
+          border: `2px dashed ${dragActive ? 'var(--emerald-500)' : 'var(--border-color)'}`,
           background: dragActive ? 'rgba(16, 185, 129, 0.05)' : 'var(--bg-secondary)',
-          padding: '2.5rem 1.5rem',
           borderRadius: '0.75rem',
+          padding: '3rem 1.5rem',
           textAlign: 'center',
           cursor: 'pointer',
-          transition: 'all 0.15s ease'
+          transition: 'all 0.2s ease',
+          marginBottom: '2rem'
         }}
       >
-        <Upload style={{ width: '32px', height: '32px', margin: '0 auto 0.75rem auto', color: 'var(--emerald-500)' }} />
-        <h4 style={{ margin: '0 0 0.35rem 0', fontSize: '1rem', fontWeight: 600 }}>
-          Drag &amp; drop files here, or click to browse
-        </h4>
-        <p style={{ margin: 0, fontSize: '0.825rem', color: 'var(--text-muted)' }}>
-          Supports PNG, JPG, JPEG, WEBP (Processed in local browser memory)
+        <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'rgba(16, 185, 129, 0.1)', border: '1px solid rgba(16, 185, 129, 0.25)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem auto' }}>
+          <Upload className="text-emerald" style={{ width: '26px', height: '26px' }} />
+        </div>
+        <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '0.4rem' }}>
+          Drop images here or click to browse
+        </h3>
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', margin: 0 }}>
+          Supports PNG, JPG, and WEBP. Processed 100% inside your browser memory.
         </p>
-        <input 
-          type="file" 
-          ref={fileInputRef} 
-          style={{ display: 'none' }} 
-          multiple 
-          accept="image/*"
-          onChange={(e) => e.target.files && handleFiles(e.target.files)}
-        />
       </div>
 
-      {/* Status Alert Banner */}
-      {statusMessage && (
-        <div style={{ 
-          marginTop: '1.25rem', 
-          padding: '0.75rem 1rem', 
-          borderRadius: '0.5rem', 
-          fontSize: '0.875rem',
-          display: 'flex', 
-          alignItems: 'center', 
-          gap: '0.5rem',
-          background: statusMessage.type === 'success' ? 'rgba(16, 185, 129, 0.08)' : 'rgba(239, 68, 68, 0.08)',
-          border: statusMessage.type === 'success' ? '1px solid rgba(16, 185, 129, 0.25)' : '1px solid rgba(239, 68, 68, 0.25)',
-          color: statusMessage.type === 'success' ? 'var(--emerald-500)' : '#ef4444'
-        }}>
-          {statusMessage.type === 'success' ? <CheckCircle2 style={{ width: '16px', height: '16px' }} /> : <ShieldAlert style={{ width: '16px', height: '16px' }} />}
-          <span>{statusMessage.text}</span>
-        </div>
-      )}
-
-      {/* Files List */}
+      {/* Controls & Queue Section */}
       {files.length > 0 && (
-        <div style={{ marginTop: '1.5rem' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem', maxHeight: '280px', overflowY: 'auto' }}>
-            {files.map(fileObj => (
-              <div 
-                key={fileObj.id} 
-                style={{ 
-                  display: 'flex', 
-                  alignItems: 'center', 
-                  justifyContent: 'space-between', 
-                  padding: '0.75rem 1rem', 
-                  background: 'var(--bg-secondary)', 
-                  border: '1px solid var(--border-color)', 
-                  borderRadius: '0.625rem' 
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', overflow: 'hidden' }}>
-                  <img
-                    src={fileObj.previewUrl}
-                    alt="Thumbnail"
-                    style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '0.375rem', border: '1px solid var(--border-color)' }}
-                  />
-                  <div style={{ overflow: 'hidden' }}>
-                    <div style={{ fontSize: '0.875rem', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', color: 'var(--text-main)' }}>
-                      {fileObj.file.name}
-                    </div>
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                      <span>Size: {formatSize(fileObj.originalSize)}</span>
-                      {fileObj.compressedSize && (
-                        <span style={{ color: 'var(--emerald-500)', marginLeft: '0.5rem', fontWeight: 600 }}>
-                          &rarr; {formatSize(fileObj.compressedSize)} ({((1 - fileObj.compressedSize / fileObj.originalSize) * 100).toFixed(0)}% saved)
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                  {fileObj.compressedUrl && (
-                    <button 
-                      onClick={() => triggerSingleDownload(fileObj)} 
-                      className="btn btn-primary"
-                      style={{ padding: '0.35rem 0.65rem', fontSize: '0.8rem' }}
-                      title="Download compressed image"
-                    >
-                      <Download style={{ width: '13px', height: '13px' }} />
-                    </button>
-                  )}
-                  <button 
-                    onClick={() => removeFile(fileObj.id)}
-                    className="modal-close-btn"
-                    aria-label="Remove file"
-                  >
-                    <X style={{ width: '16px', height: '16px' }} />
-                  </button>
-                </div>
+        <div>
+          {/* Quality Presets & Slider */}
+          <div className="solid-card" style={{ padding: '1.25rem', marginBottom: '1.5rem', background: 'var(--bg-secondary)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600, fontSize: '0.925rem' }}>
+                <Sliders style={{ width: '16px', height: '16px', color: 'var(--emerald-500)' }} />
+                <span>Compression Quality: <strong className="text-emerald">{quality}%</strong></span>
               </div>
-            ))}
-          </div>
 
-          <hr style={{ border: 'none', borderTop: '1px solid var(--border-color)', margin: '1.5rem 0' }} />
-
-          {/* Compression Presets & Custom Slider */}
-          <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-              <label htmlFor="quality-slider" style={{ fontSize: '0.875rem', fontWeight: 600 }}>
-                Target Quality: {quality}%
-              </label>
-              <div style={{ display: 'flex', gap: '0.35rem' }}>
+              {/* Quality Presets */}
+              <div style={{ display: 'flex', gap: '0.4rem' }}>
                 {QUALITY_PRESETS.map(preset => (
                   <button
                     key={preset.value}
-                    type="button"
                     onClick={() => setQuality(preset.value)}
-                    className={`btn btn-secondary-solid ${quality === preset.value ? 'active' : ''}`}
-                    style={{
-                      padding: '0.25rem 0.55rem',
-                      fontSize: '0.75rem',
-                      background: quality === preset.value ? 'var(--emerald-600)' : 'var(--bg-secondary)',
-                      color: quality === preset.value ? '#ffffff' : 'var(--text-main)',
-                      borderColor: quality === preset.value ? 'var(--emerald-600)' : 'var(--border-color)'
-                    }}
+                    className={`category-pill-btn${quality === preset.value ? ' active' : ''}`}
+                    style={{ padding: '0.35rem 0.65rem', fontSize: '0.75rem' }}
                   >
                     {preset.label}
                   </button>
@@ -395,38 +224,160 @@ export const ConverterWidget: React.FC = () => {
             </div>
 
             <input 
-              id="quality-slider"
               type="range" 
+              id="quality-slider"
               min="10" 
-              max="100" 
+              max="95" 
               value={quality} 
               onChange={(e) => setQuality(Number(e.target.value))}
-              style={{ width: '100%', accentColor: 'var(--emerald-500)', marginBottom: '1.5rem' }}
+              style={{ width: '100%', accentColor: 'var(--emerald-500)', cursor: 'pointer' }}
             />
-
-            {/* Action Buttons */}
-            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-              <button 
-                onClick={compressImages} 
-                disabled={processing}
-                className="btn btn-secondary-solid" 
-                style={{ flex: 1, padding: '0.75rem' }}
-              >
-                {processing ? <Loader className="spin" style={{ width: '15px', height: '15px' }} /> : <Sliders style={{ width: '15px', height: '15px' }} />}
-                <span>Compress Images ({quality}%)</span>
-              </button>
-
-              <button 
-                onClick={compileToPDF} 
-                disabled={processing}
-                className="btn btn-primary" 
-                style={{ flex: 1, padding: '0.75rem' }}
-              >
-                {processing ? <Loader className="spin" style={{ width: '15px', height: '15px' }} /> : <FileText style={{ width: '15px', height: '15px' }} />}
-                <span>Compile to PDF</span>
-              </button>
-            </div>
           </div>
+
+          {/* Queue Statistics Bar */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <div style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>
+              <span>{files.length} file(s) loaded &bull; Original Total: <strong>{formatFileSize(totalOriginalSize)}</strong></span>
+              {hasCompressedFiles && (
+                <span style={{ marginLeft: '0.5rem', color: 'var(--emerald-500)' }}>
+                  &rarr; Compressed: <strong>{formatFileSize(totalCompressedSize)}</strong>
+                </span>
+              )}
+            </div>
+
+            <button 
+              onClick={clearAll}
+              className="btn btn-outline"
+              style={{ padding: '0.35rem 0.75rem', fontSize: '0.8rem', color: '#ef4444', borderColor: 'rgba(239, 68, 68, 0.3)' }}
+            >
+              <Trash2 style={{ width: '13px', height: '13px' }} />
+              <span>Clear All</span>
+            </button>
+          </div>
+
+          {/* File Items Grid */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
+            {files.map((fileObj) => (
+              <div 
+                key={fileObj.id} 
+                className="solid-card" 
+                style={{ position: 'relative', overflow: 'hidden', padding: '0.65rem', display: 'flex', flexDirection: 'column' }}
+              >
+                <button 
+                  onClick={() => removeFile(fileObj.id)}
+                  style={{
+                    position: 'absolute',
+                    top: '0.85rem',
+                    right: '0.85rem',
+                    background: 'rgba(0, 0, 0, 0.7)',
+                    border: 'none',
+                    borderRadius: '50%',
+                    width: '24px',
+                    height: '24px',
+                    color: '#ffffff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    cursor: 'pointer',
+                    zIndex: 2
+                  }}
+                  title="Remove file"
+                  aria-label="Remove file"
+                >
+                  <X style={{ width: '14px', height: '14px' }} />
+                </button>
+
+                <div style={{ height: '110px', background: 'var(--bg-secondary)', borderRadius: '0.375rem', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.5rem' }}>
+                  <img 
+                    src={fileObj.previewUrl} 
+                    alt={fileObj.file.name} 
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                  />
+                </div>
+
+                <div style={{ fontSize: '0.8rem', fontWeight: 600, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', marginBottom: '0.2rem' }}>
+                  {fileObj.file.name}
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                  <span>{formatFileSize(fileObj.originalSize)}</span>
+                  {fileObj.compressedSize && (
+                    <span className="text-emerald" style={{ fontWeight: 600 }}>
+                      {formatFileSize(fileObj.compressedSize)}
+                    </span>
+                  )}
+                </div>
+
+                {fileObj.compressedUrl && (
+                  <a 
+                    href={fileObj.compressedUrl} 
+                    download={`compressed-${fileObj.file.name}`}
+                    className="btn btn-primary"
+                    style={{ marginTop: '0.5rem', padding: '0.35rem', fontSize: '0.75rem', width: '100%' }}
+                  >
+                    <Download style={{ width: '12px', height: '12px' }} />
+                    <span>Download</span>
+                  </a>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {/* Action Execution Buttons */}
+          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
+            <button 
+              onClick={compressImages} 
+              disabled={processing}
+              className="btn btn-primary"
+              style={{ flex: 1, minWidth: '200px' }}
+            >
+              {processing ? (
+                <Loader className="spin" style={{ width: '16px', height: '16px' }} />
+              ) : (
+                <Sparkles style={{ width: '16px', height: '16px' }} />
+              )}
+              <span>{processing ? 'Processing in Memory...' : `Compress ${files.length} Image(s)`}</span>
+            </button>
+
+            <button 
+              onClick={compilePdf} 
+              disabled={processing}
+              className="btn btn-secondary-solid"
+              style={{ flex: 1, minWidth: '200px' }}
+            >
+              {processing ? (
+                <Loader className="spin" style={{ width: '16px', height: '16px' }} />
+              ) : (
+                <FileText style={{ width: '16px', height: '16px' }} />
+              )}
+              <span>Compile into Multi-Page PDF</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Status Feedback Message */}
+      {statusMessage && (
+        <div 
+          style={{
+            padding: '0.85rem 1.15rem',
+            borderRadius: '0.5rem',
+            marginTop: '1.25rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.65rem',
+            fontSize: '0.875rem',
+            background: statusMessage.type === 'success' ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+            border: `1px solid ${statusMessage.type === 'success' ? 'rgba(16, 185, 129, 0.25)' : 'rgba(239, 68, 68, 0.25)'}`,
+            color: statusMessage.type === 'success' ? 'var(--emerald-500)' : '#ef4444'
+          }}
+        >
+          {statusMessage.type === 'success' ? (
+            <CheckCircle2 style={{ width: '17px', height: '17px', flexShrink: 0 }} />
+          ) : (
+            <ShieldAlert style={{ width: '17px', height: '17px', flexShrink: 0 }} />
+          )}
+          <span>{statusMessage.text}</span>
         </div>
       )}
     </div>

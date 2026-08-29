@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, ChevronDown, Users, Search, MessageSquare, X } from 'lucide-react';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 interface FAQItem {
   question: string;
@@ -8,99 +9,104 @@ interface FAQItem {
   category: 'general' | 'privacy' | 'setup' | 'features';
 }
 
+const CATEGORIES = [
+  { id: 'all', label: 'All Topics' },
+  { id: 'general', label: 'General' },
+  { id: 'privacy', label: 'Privacy & Security' },
+  { id: 'setup', label: 'Docker & Setup' },
+  { id: 'features', label: 'Features & Formats' },
+] as const;
+
+const FAQ_DATA: FAQItem[] = [
+  {
+    category: 'general',
+    question: 'Is Konvert really free?',
+    answer: (
+      <>
+        <p style={{ marginBottom: '0.5rem' }}>Yes, Konvert is <strong>100% free and open-source forever</strong> with:</p>
+        <ul style={{ paddingLeft: '1.25rem', display: 'grid', gap: '0.3rem' }}>
+          <li>Zero advertisements or intrusive tracking cookies</li>
+          <li>No hidden charges, paywalls, or premium tiers</li>
+          <li>No account or credit card registration required</li>
+          <li>Free software updates distributed through GitHub</li>
+        </ul>
+      </>
+    )
+  },
+  {
+    category: 'general',
+    question: 'What platforms does Konvert currently support?',
+    answer: (
+      <>
+        <p style={{ marginBottom: '0.5rem' }}>Konvert is available on:</p>
+        <ul style={{ paddingLeft: '1.25rem', display: 'grid', gap: '0.3rem' }}>
+          <li><strong>Android:</strong> Download universal APK from GitHub Releases or app stores.</li>
+          <li><strong>Windows:</strong> Native standalone desktop installer for Windows 10/11.</li>
+          <li><strong>Web:</strong> In-browser Client Studio for lightweight image compression and PDF compilation.</li>
+        </ul>
+      </>
+    )
+  },
+  {
+    category: 'privacy',
+    question: 'Does Konvert upload user documents to a cloud database?',
+    answer: (
+      <>
+        <p style={{ marginBottom: '0.5rem' }}><strong>No, never.</strong> Konvert operates on strict local-first principles:</p>
+        <ul style={{ paddingLeft: '1.25rem', display: 'grid', gap: '0.3rem' }}>
+          <li><strong>Images:</strong> 100% processed on-device in local RAM.</li>
+          <li><strong>Documents:</strong> Processed through your private self-hosted Docker container.</li>
+          <li><strong>No telemetry:</strong> We do not log conversions, filenames, or user identifiers.</li>
+        </ul>
+      </>
+    )
+  },
+  {
+    category: 'setup',
+    question: 'Why do document conversions require Docker self-hosting?',
+    answer: (
+      <p style={{ lineHeight: 1.6 }}>
+        Converting intricate formats (like DOCX, PPTX, or ODT to PDF) requires a headless rendering engine (LibreOffice). Rather than routing your private files through our cloud servers, Konvert lets you run the microservice yourself inside an isolated Docker container, maintaining 100% file privacy.
+      </p>
+    )
+  },
+  {
+    category: 'features',
+    question: 'What formats can be converted offline?',
+    answer: (
+      <>
+        <p style={{ marginBottom: '0.5rem' }}>The on-device engine directly supports:</p>
+        <ul style={{ paddingLeft: '1.25rem', display: 'grid', gap: '0.3rem' }}>
+          <li><strong>Image conversions &amp; compression:</strong> PNG, JPG, JPEG, WEBP, HEIC.</li>
+          <li><strong>PDF document compilation:</strong> Multi-image albums converted into standardized A4 PDF pages.</li>
+          <li><strong>Document formats via Docker:</strong> DOC, DOCX, PPT, PPTX, XLS, XLSX, TXT, ODT.</li>
+        </ul>
+      </>
+    )
+  },
+  {
+    category: 'privacy',
+    question: 'How does the VirusTotal integration work?',
+    answer: (
+      <p style={{ lineHeight: 1.6 }}>
+        VirusTotal scanning is completely optional. If enabled in Settings, the app computes a SHA-256 cryptographic hash of your file locally and checks if known antivirus vendors have flagged that hash. Your actual document content is never transmitted to the scan API.
+      </p>
+    )
+  }
+];
+
 export const FAQ: React.FC = () => {
+  useDocumentTitle('FAQ — Konvert');
+
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [openItems, setOpenItems] = useState<Record<number, boolean>>({ 0: true });
-
-  useEffect(() => {
-    document.title = 'FAQ — Konvert';
-    return () => { document.title = 'Konvert'; };
-  }, []);
-
-  const faqData: FAQItem[] = [
-    {
-      category: 'general',
-      question: 'Is Konvert really free?',
-      answer: (
-        <>
-          <p style={{ marginBottom: '0.5rem' }}>Yes, Konvert is <strong>100% free and open-source forever</strong> with:</p>
-          <ul style={{ paddingLeft: '1.25rem', display: 'grid', gap: '0.3rem' }}>
-            <li>Zero advertisements or intrusive tracking cookies</li>
-            <li>No hidden charges, paywalls, or premium tiers</li>
-            <li>No account or credit card registration required</li>
-            <li>Free software updates distributed through GitHub</li>
-          </ul>
-        </>
-      )
-    },
-    {
-      category: 'general',
-      question: 'What platforms does Konvert currently support?',
-      answer: (
-        <>
-          <p style={{ marginBottom: '0.5rem' }}>Konvert is available on:</p>
-          <ul style={{ paddingLeft: '1.25rem', display: 'grid', gap: '0.3rem' }}>
-            <li><strong>Android:</strong> Download universal APK from GitHub Releases or app stores.</li>
-            <li><strong>Windows:</strong> Native standalone desktop installer for Windows 10/11.</li>
-            <li><strong>Web:</strong> In-browser Client Studio for lightweight image compression and PDF compilation.</li>
-          </ul>
-        </>
-      )
-    },
-    {
-      category: 'privacy',
-      question: 'Does Konvert upload user documents to a cloud database?',
-      answer: (
-        <>
-          <p style={{ marginBottom: '0.5rem' }}><strong>No, never.</strong> Konvert operates on strict local-first principles:</p>
-          <ul style={{ paddingLeft: '1.25rem', display: 'grid', gap: '0.3rem' }}>
-            <li><strong>Images:</strong> 100% processed on-device in local RAM.</li>
-            <li><strong>Documents:</strong> Processed through your private self-hosted Docker container.</li>
-            <li><strong>No telemetry:</strong> We do not log conversions, filenames, or user identifiers.</li>
-          </ul>
-        </>
-      )
-    },
-    {
-      category: 'setup',
-      question: 'Why do document conversions require Docker self-hosting?',
-      answer: (
-        <p style={{ lineHeight: 1.6 }}>
-          Converting intricate formats (like DOCX, PPTX, or ODT to PDF) requires a headless rendering engine (LibreOffice). Rather than routing your private files through our cloud servers, Konvert lets you run the microservice yourself inside an isolated Docker container, maintaining 100% file privacy.
-        </p>
-      )
-    },
-    {
-      category: 'features',
-      question: 'What formats can be converted offline?',
-      answer: (
-        <>
-          <p style={{ marginBottom: '0.5rem' }}>The on-device engine directly supports:</p>
-          <ul style={{ paddingLeft: '1.25rem', display: 'grid', gap: '0.3rem' }}>
-            <li><strong>Image conversions &amp; compression:</strong> PNG, JPG, JPEG, WEBP, HEIC.</li>
-            <li><strong>PDF document compilation:</strong> Multi-image albums converted into standardized A4 PDF pages.</li>
-            <li><strong>Document formats via Docker:</strong> DOC, DOCX, PPT, PPTX, XLS, XLSX, TXT, ODT.</li>
-          </ul>
-        </>
-      )
-    },
-    {
-      category: 'privacy',
-      question: 'How does the VirusTotal integration work?',
-      answer: (
-        <p style={{ lineHeight: 1.6 }}>
-          VirusTotal scanning is completely optional. If enabled in Settings, the app computes a SHA-256 cryptographic hash of your file locally and checks if known antivirus vendors have flagged that hash. Your actual document content is never transmitted to the scan API.
-        </p>
-      )
-    }
-  ];
 
   const toggleItem = (index: number) => {
     setOpenItems(prev => ({ ...prev, [index]: !prev[index] }));
   };
 
-  const filteredFAQs = faqData.filter(faq => {
+  const filteredFAQs = FAQ_DATA.filter(faq => {
     const matchesSearch = searchTerm === '' || 
       faq.question.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = activeCategory === 'all' || faq.category === activeCategory;
@@ -137,40 +143,34 @@ export const FAQ: React.FC = () => {
           <button
             onClick={() => setSearchTerm('')}
             style={{ position: 'absolute', right: '0.85rem', top: '50%', transform: 'translateY(-50%)', background: 'transparent', border: 'none', color: 'var(--text-muted)', cursor: 'pointer' }}
+            aria-label="Clear search"
           >
-            <X style={{ width: '16px', height: '16px' }} />
+            <X style={{ width: '15px', height: '15px' }} />
           </button>
         )}
       </div>
 
-      {/* Category Filter */}
+      {/* Category Pills */}
       <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '2.5rem' }}>
-        {['all', 'general', 'privacy', 'setup', 'features'].map(cat => (
-          <button 
-            key={cat}
-            className={`btn btn-secondary-solid ${activeCategory === cat ? 'active' : ''}`} 
-            onClick={() => setActiveCategory(cat)}
-            style={{ 
-              textTransform: 'capitalize',
-              padding: '0.35rem 0.85rem',
-              fontSize: '0.825rem',
-              background: activeCategory === cat ? 'var(--emerald-600)' : 'var(--bg-secondary)',
-              color: activeCategory === cat ? '#ffffff' : 'var(--text-main)',
-              borderColor: activeCategory === cat ? 'var(--emerald-600)' : 'var(--border-color)'
-            }}
+        {CATEGORIES.map(({ id, label }) => (
+          <button
+            key={id}
+            onClick={() => setActiveCategory(id)}
+            className={`category-pill-btn${activeCategory === id ? ' active' : ''}`}
+            style={{ padding: '0.45rem 0.9rem', fontSize: '0.825rem' }}
           >
-            {cat}
+            {label}
           </button>
         ))}
       </div>
 
-      {/* FAQ Items */}
-      <section style={{ maxWidth: '780px', margin: '0 auto 3.5rem auto', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+      {/* Accordion FAQ List */}
+      <section style={{ maxWidth: '780px', margin: '0 auto 3.5rem auto', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
         {filteredFAQs.length > 0 ? (
           filteredFAQs.map((faq, index) => {
             const isOpen = !!openItems[index];
             return (
-              <div key={index} className="solid-card" style={{ overflow: 'hidden' }}>
+              <div key={faq.question} className="solid-card" style={{ overflow: 'hidden' }}>
                 <div 
                   role="button"
                   tabIndex={0}

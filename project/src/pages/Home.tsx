@@ -1,66 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   Download, Server, Lock, CheckCircle2, X, Sparkles, Monitor, 
   Layers, MessageSquare, ArrowRight, ShieldCheck, Cpu, HardDrive, Sliders 
 } from 'lucide-react';
 import { GithubIcon } from '../components/GithubIcon';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
+import { useModal } from '../hooks/useModal';
+import { useGitHubReleases } from '../hooks/useGitHubReleases';
+import { 
+  getApkDownloadUrl, 
+  GITHUB_RELEASES_URL, 
+  GITHUB_LATEST_RELEASE_URL 
+} from '../constants/links';
 
 export const Home: React.FC = () => {
+  useDocumentTitle('Konvert - Privacy-First File Converter for Android & Windows');
+
   const [modalOpen, setModalOpen] = useState(false);
-  const [latestVersion, setLatestVersion] = useState<string>('V1.7.0');
-
-  useEffect(() => {
-    document.title = 'Konvert - Privacy-First File Converter for Android & Windows';
-
-    // Synchronize latest release dynamically with GitHub Releases cache
-    const fetchLatestRelease = async () => {
-      try {
-        const cached = sessionStorage.getItem('konvert_releases_cache');
-        if (cached) {
-          const parsed = JSON.parse(cached);
-          if (Array.isArray(parsed) && parsed[0]?.tag_name) {
-            setLatestVersion(parsed[0].tag_name);
-            return;
-          }
-        }
-        const res = await fetch('https://api.github.com/repos/TUSHAR91316/Konvert/releases?per_page=1');
-        if (res.ok) {
-          const data = await res.json();
-          if (Array.isArray(data) && data[0]?.tag_name) {
-            setLatestVersion(data[0].tag_name);
-          }
-        }
-      } catch {
-        // Fallback default is V1.7.0
-      }
-    };
-
-    fetchLatestRelease();
-    return () => { document.title = 'Konvert'; };
-  }, []);
-
-  useEffect(() => {
-    if (!modalOpen) return;
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        setModalOpen(false);
-      }
-    };
-
-    const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    window.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      document.body.style.overflow = originalOverflow;
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [modalOpen]);
+  const { latestTag } = useGitHubReleases('V1.7.0');
 
   const openModal = () => setModalOpen(true);
   const closeModal = () => setModalOpen(false);
+
+  useModal({ isOpen: modalOpen, onClose: closeModal });
 
   return (
     <div className="home-container">
@@ -78,7 +41,7 @@ export const Home: React.FC = () => {
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1.25rem' }}>
               <Link to="/roadmap" className="badge" style={{ textDecoration: 'none' }}>
                 <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: 'var(--emerald-500)' }} />
-                <span>{latestVersion} Released &bull; Fully Local Processing</span>
+                <span>{latestTag} Released &bull; Fully Local Processing</span>
               </Link>
             </div>
 
@@ -97,12 +60,12 @@ export const Home: React.FC = () => {
             {/* Quick Actions */}
             <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '2.5rem' }}>
               <a
-                href={`https://github.com/TUSHAR91316/Konvert/releases/download/${latestVersion}/app-release.apk`}
+                href={getApkDownloadUrl(latestTag)}
                 className="btn btn-primary"
                 id="download-android-hero"
               >
                 <Download style={{ width: '16px', height: '16px' }} />
-                <span>Download for Android ({latestVersion})</span>
+                <span>Download for Android ({latestTag})</span>
               </a>
 
               <button className="btn btn-secondary-solid" onClick={openModal}>
@@ -135,123 +98,123 @@ export const Home: React.FC = () => {
         </div>
       </section>
 
-      {/* Key Metrics Strip */}
-      <section style={{ borderBottom: '1px solid var(--border-color)', background: 'var(--card-bg)', padding: '2.5rem 0' }}>
+      {/* Key Metrics / Highlights Strip */}
+      <section style={{ borderBottom: '1px solid var(--border-color)', background: 'var(--bg-secondary)', padding: '1.75rem 0' }}>
         <div className="container">
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1.5rem' }}>
-            <div style={{ padding: '1rem', borderLeft: '3px solid var(--emerald-500)' }}>
-              <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.02em' }}>100% Local</div>
-              <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>Image conversions execute inside memory on your hardware.</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', textAlign: 'center' }}>
+            <div>
+              <div style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-main)' }}>100%</div>
+              <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>On-Device Image Processing</div>
             </div>
-            <div style={{ padding: '1rem', borderLeft: '3px solid var(--cyan-500)' }}>
-              <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.02em' }}>Zero Telemetry</div>
-              <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>No user trackers, analytical pings, or data mining.</div>
+            <div>
+              <div style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-main)' }}>0 MB</div>
+              <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Remote Cloud Retention</div>
             </div>
-            <div style={{ padding: '1rem', borderLeft: '3px solid #8b5cf6' }}>
-              <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.02em' }}>Self-Hosted Backend</div>
-              <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>Deploy our Docker container for private DOCX/PPTX parsing.</div>
+            <div>
+              <div style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-main)' }}>0 Ads</div>
+              <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>Free &amp; Open Source Software</div>
             </div>
-            <div style={{ padding: '1rem', borderLeft: '3px solid #f59e0b' }}>
-              <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.02em' }}>100% Free &amp; Clean</div>
-              <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>Open source code with no paywalls or intrusive advertisements.</div>
+            <div>
+              <div style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-main)' }}>70+</div>
+              <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>VirusTotal Engine Signatures</div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
+      {/* Core Features Grid */}
       <section className="section-padding">
         <div className="container">
           <div className="section-header">
-            <h2 className="section-title">Engine Architecture</h2>
-            <p className="section-subtitle">Designed for users and developers who value data privacy and speed.</p>
+            <h2 className="section-title">Engineered for Sovereign Privacy</h2>
+            <p className="section-subtitle">A decentralized approach to file manipulation without paywalls or tracking.</p>
           </div>
 
           <div className="features-grid">
             {/* Feature 1 */}
             <div className="feature-card">
               <div className="feature-icon-wrapper">
-                <Cpu className="text-emerald" style={{ width: '20px', height: '20px' }} />
+                <Cpu className="text-emerald" style={{ width: '22px', height: '22px' }} />
               </div>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.5rem' }}>Hybrid Conversion Engine</h3>
+              <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '0.5rem' }}>Local-First Conversions</h3>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.6 }}>
-                Lightweight tasks (PNG, JPG, WebP compression and PDF compilation) execute on-device. Complex documents route through your personal Docker container via Ngrok or local network.
+                Image resizing, format conversion (JPG, PNG, WEBP), and multi-page PDF compilation execute entirely inside device memory.
               </p>
             </div>
 
             {/* Feature 2 */}
             <div className="feature-card">
               <div className="feature-icon-wrapper">
-                <Sliders className="text-emerald" style={{ width: '20px', height: '20px' }} />
+                <Server style={{ color: '#06b6d4', width: '22px', height: '22px' }} />
               </div>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.5rem' }}>Precision Compression</h3>
+              <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '0.5rem' }}>Bring Your Own Backend</h3>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.6 }}>
-                Fine-tune image outputs using quality thresholds or exact target file-size limits (e.g. max 300 KB) with immediate on-screen byte savings breakdown.
+                For heavy office formats (DOCX, PPTX, XLSX), connect your personal Docker container via Ngrok with zero cloud intermediaries.
               </p>
             </div>
 
             {/* Feature 3 */}
             <div className="feature-card">
               <div className="feature-icon-wrapper">
-                <ShieldCheck className="text-emerald" style={{ width: '20px', height: '20px' }} />
+                <Sliders style={{ color: '#6366f1', width: '22px', height: '22px' }} />
               </div>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.5rem' }}>VirusTotal Threat Inspection</h3>
+              <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '0.5rem' }}>Granular File Compression</h3>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.6 }}>
-                Optional malware scanner checks file hashes against VirusTotal multi-engine definitions before any local extraction or document rendering.
+                Fine-tune image compression by quality percentage or exact target file size (KB/MB) with instant local preview output.
               </p>
             </div>
 
             {/* Feature 4 */}
             <div className="feature-card">
               <div className="feature-icon-wrapper">
-                <Layers className="text-emerald" style={{ width: '20px', height: '20px' }} />
+                <Lock className="text-emerald" style={{ width: '22px', height: '22px' }} />
               </div>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.5rem' }}>Batch Processing</h3>
+              <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '0.5rem' }}>Zero Identity Requirements</h3>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.6 }}>
-                Queue multiple documents or image albums simultaneously. Bulk processing saves time without causing high CPU spikes.
+                Guest-first architecture. No account registration, email collection, analytical trackers, or behavioral profiling.
               </p>
             </div>
 
             {/* Feature 5 */}
             <div className="feature-card">
               <div className="feature-icon-wrapper">
-                <Server className="text-emerald" style={{ width: '20px', height: '20px' }} />
+                <ShieldCheck style={{ color: '#06b6d4', width: '22px', height: '22px' }} />
               </div>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.5rem' }}>Docker Self-Hosting 101</h3>
+              <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '0.5rem' }}>VirusTotal Threat Guard</h3>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.6 }}>
-                A 2-line Docker CLI or Compose setup exposes an isolated headless LibreOffice microservice with wildcard CORS and token authentication.
+                Pre-flight malware verification queries cryptographic hashes against 70+ security vendors before converting files.
               </p>
             </div>
 
             {/* Feature 6 */}
             <div className="feature-card">
               <div className="feature-icon-wrapper">
-                <Lock className="text-emerald" style={{ width: '20px', height: '20px' }} />
+                <Layers style={{ color: '#6366f1', width: '22px', height: '22px' }} />
               </div>
-              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.5rem' }}>Ephemeral Session Safety</h3>
+              <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '0.5rem' }}>Batch Queue Workflow</h3>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.6 }}>
-                Temporary conversion buffers are flushed immediately after file creation. Your document contents never touch external databases.
+                Queue multiple documents or photos simultaneously. Convert, inspect file sizes, and compile them into combined PDFs.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Comparison Section */}
+      {/* Comparison Matrix */}
       <section className="section-padding" style={{ background: 'var(--bg-secondary)', borderTop: '1px solid var(--border-color)', borderBottom: '1px solid var(--border-color)' }}>
         <div className="container">
           <div className="section-header">
-            <h2 className="section-title">Konvert vs. Cloud SaaS Converters</h2>
-            <p className="section-subtitle">How on-device architecture compares against traditional web converters.</p>
+            <h2 className="section-title">Konvert vs. Traditional Online Converters</h2>
+            <p className="section-subtitle">See why local processing delivers superior privacy and security.</p>
           </div>
 
           <div className="comparison-table-wrapper">
             <table className="comparison-table">
               <thead>
                 <tr>
-                  <th>Architecture Feature</th>
-                  <th className="highlight-col">Konvert</th>
-                  <th>Cloud SaaS Services</th>
+                  <th>Capability</th>
+                  <th className="highlight-col">Konvert (Local / BYOB)</th>
+                  <th>Standard SaaS Converters</th>
                 </tr>
               </thead>
               <tbody>
@@ -334,7 +297,7 @@ export const Home: React.FC = () => {
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               <a
-                href="https://github.com/TUSHAR91316/Konvert/releases"
+                href={GITHUB_RELEASES_URL}
                 className="btn btn-primary"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -343,7 +306,7 @@ export const Home: React.FC = () => {
                 <span>GitHub Releases (Latest)</span>
               </a>
               <a
-                href="https://github.com/TUSHAR91316/Konvert/releases/latest"
+                href={GITHUB_LATEST_RELEASE_URL}
                 className="btn btn-secondary-solid"
                 target="_blank"
                 rel="noopener noreferrer"

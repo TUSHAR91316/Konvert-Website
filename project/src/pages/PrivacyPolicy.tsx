@@ -1,34 +1,33 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Shield } from 'lucide-react';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
+import { GITHUB_REPO_URL } from '../constants/links';
 
 export const PrivacyPolicy: React.FC = () => {
-  useEffect(() => {
-    document.title = 'Privacy Policy — Konvert';
-    return () => { document.title = 'Konvert'; };
-  }, []);
+  useDocumentTitle('Privacy Policy — Konvert');
 
   return (
     <main className="page-container" style={{ paddingBottom: '4rem' }}>
       <Link to="/" className="back-link" style={{ marginBottom: '2rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
         <ArrowLeft style={{ width: '16px', height: '16px' }} />
-        Back to Home
+        <span>Back to Home</span>
       </Link>
 
       <div className="content-box reveal visible">
         <div className="privacy-header">
           <h1 className="privacy-title" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             <Shield className="text-emerald" style={{ width: '32px', height: '32px' }} />
-            Privacy Policy
+            <span>Privacy Policy</span>
           </h1>
           <p className="privacy-last-updated">Last Updated: April 5, 2026</p>
         </div>
 
         <div className="privacy-content">
           <h2>1. Introduction</h2>
-          <p>Welcome to Konvert ("we," "our," or "us"). We are committed to protecting your privacy and ensuring you have a secure experience when using our Advanced File Management & Conversion Tool for Android and Windows. This Privacy Policy outlines how we handle your data.</p>
+          <p>Welcome to Konvert (&ldquo;we,&rdquo; &ldquo;our,&rdquo; or &ldquo;us&rdquo;). We are committed to protecting your privacy and ensuring you have a secure experience when using our Advanced File Management &amp; Conversion Tool for Android and Windows. This Privacy Policy outlines how we handle your data.</p>
 
-          <h2>2. Data Collection & Processing</h2>
+          <h2>2. Data Collection &amp; Processing</h2>
           <p>Konvert prioritizes your privacy through a completely decentralized, Bring Your Own Backend (BYOB) architecture:</p>
           <ul>
             <li><strong>Local Image/Video Processing (100% Offline):</strong> All your image and video conversions, as well as file compressions, are processed entirely locally on your device. We do not upload these files anywhere.</li>
@@ -36,7 +35,7 @@ export const PrivacyPolicy: React.FC = () => {
           </ul>
 
           <h2>3. Third-Party Services</h2>
-          <p>To provide advanced security, Konvert integrates directly with the <strong>VirusTotal API</strong> for malware scanning. When you opt into this feature, a cryptographic hash or sample of your file may be checked against VirusTotal's database to verify its safety. We do not share your raw personal files with advertisers or unapproved external entities.</p>
+          <p>To provide advanced security, Konvert integrates directly with the <strong>VirusTotal API</strong> for malware scanning. When you opt into this feature, a cryptographic hash or sample of your file may be checked against VirusTotal&apos;s database to verify its safety. We do not share your raw personal files with advertisers or unapproved external entities.</p>
 
           <h2>4. Personal Information</h2>
           <p>Konvert is designed as a guest-first platform. We do not require registration, email addresses, or credit card details. We do not track, profile, or sell user personal information.</p>
@@ -48,7 +47,7 @@ export const PrivacyPolicy: React.FC = () => {
           <p>We may update this Privacy Policy periodically to reflect new features or platform capabilities. Since we do not collect your contact details, we encourage you to review this page occasionally for the latest information on our privacy practices.</p>
 
           <h2>7. Contact Us</h2>
-          <p>If you have any questions or concerns regarding our Privacy Policy or data processing practices, please reach out via our GitHub repository: <a href="https://github.com/TUSHAR91316/Konvert" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--emerald-500)', textDecoration: 'none' }}>Konvert GitHub</a>.</p>
+          <p>If you have any questions or concerns regarding our Privacy Policy or data processing practices, please reach out via our GitHub repository: <a href={GITHUB_REPO_URL} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--emerald-500)', textDecoration: 'none' }}>Konvert GitHub</a>.</p>
         </div>
       </div>
     </main>

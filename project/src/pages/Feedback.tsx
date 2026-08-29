@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   ArrowLeft, MessageSquare, Star, Bug, Sparkles, Sliders, Zap, 
@@ -6,7 +6,15 @@ import {
 } from 'lucide-react';
 import { GithubIcon } from '../components/GithubIcon';
 import { useToast } from '../context/ToastContext';
-import type { FeedbackCategory } from '../components/FeedbackModal';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
+import type { FeedbackCategory } from '../types/feedback';
+import { 
+  RATING_LABELS, 
+  formatFeedbackMarkdown, 
+  createGitHubIssueUrl, 
+  saveFeedbackToStorage 
+} from '../services/feedbackService';
+import { GITHUB_ISSUES_URL, GITHUB_DISCUSSIONS_URL } from '../constants/links';
 
 const CATEGORIES: { id: FeedbackCategory; label: string; icon: React.FC<{ style?: React.CSSProperties }> }[] = [
   { id: 'bug', label: 'Bug Report', icon: Bug },
@@ -16,15 +24,9 @@ const CATEGORIES: { id: FeedbackCategory; label: string; icon: React.FC<{ style?
   { id: 'general', label: 'General', icon: MessageSquare },
 ];
 
-const RATING_LABELS = ['Needs Work', 'Below Average', 'Average', 'Good', 'Excellent'];
-
 export const Feedback: React.FC = () => {
+  useDocumentTitle('Feedback & Suggestions — Konvert');
   const { showToast } = useToast();
-
-  useEffect(() => {
-    document.title = 'Feedback & Suggestions — Konvert';
-    return () => { document.title = 'Konvert'; };
-  }, []);
 
   const [category, setCategory] = useState<FeedbackCategory>('feature');
   const [rating, setRating] = useState<number>(5);
@@ -37,35 +39,6 @@ export const Feedback: React.FC = () => {
   const [submitted, setSubmitted] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const getDiagnostics = () => ({
-    os: navigator.platform || 'Unknown OS',
-    userAgent: navigator.userAgent,
-    screen: `${window.innerWidth}x${window.innerHeight}`,
-    pathname: window.location.pathname,
-    timestamp: new Date().toISOString()
-  });
-
-  const formatMarkdownReport = () => {
-    const diag = getDiagnostics();
-    const catLabel = CATEGORIES.find(c => c.id === category)?.label || category;
-    return `### [Feedback] ${title || 'Konvert Feedback'}
-
-**Category**: ${catLabel}
-**Rating**: ${rating}/5 (${RATING_LABELS[rating - 1]})
-${email ? `**Contact**: ${email}` : ''}
-
-#### Description:
-${description || 'No additional details provided.'}
-
-${includeDiagnostics ? `#### Environment Diagnostics:
-- **Route**: \`${diag.pathname}\`
-- **Resolution**: \`${diag.screen}\`
-- **Platform**: \`${diag.os}\`
-- **User Agent**: \`${diag.userAgent}\`
-- **Timestamp**: \`${diag.timestamp}\`` : ''}
-`;
-  };
-
   const handleInAppSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!description.trim()) {
@@ -76,21 +49,7 @@ ${includeDiagnostics ? `#### Environment Diagnostics:
     setIsSubmitting(true);
 
     try {
-      const feedbackRecord = {
-        id: Math.random().toString(36).substring(2, 9),
-        category,
-        rating,
-        title: title.trim(),
-        description: description.trim(),
-        email: email.trim(),
-        diagnostics: includeDiagnostics ? getDiagnostics() : null,
-        date: new Date().toISOString()
-      };
-
-      const existing = JSON.parse(localStorage.getItem('konvert_user_feedback') || '[]');
-      existing.unshift(feedbackRecord);
-      localStorage.setItem('konvert_user_feedback', JSON.stringify(existing.slice(0, 50)));
-
+      saveFeedbackToStorage(category, rating, title, description, email, includeDiagnostics);
       setTimeout(() => {
         setIsSubmitting(false);
         setSubmitted(true);
@@ -98,47 +57,35 @@ ${includeDiagnostics ? `#### Environment Diagnostics:
       }, 400);
     } catch {
       setIsSubmitting(false);
-      setSubmitted(true);
-      showToast('Feedback recorded locally. Thank you!', 'success');
+      showToast('Failed to save feedback record.', 'error');
     }
   };
 
   const handleOpenGitHubIssue = () => {
     if (!description.trim()) {
-      showToast('Please enter a brief description first.', 'error');
+      showToast('Please provide a short description first.', 'error');
       return;
     }
 
-    const issueTitle = encodeURIComponent(`[${category.toUpperCase()}] ${title.trim() || 'User Feedback'}`);
-    const issueBody = encodeURIComponent(formatMarkdownReport());
-    const labels = category === 'bug' ? 'bug' : category === 'feature' ? 'enhancement' : 'feedback';
-    const url = `https://github.com/TUSHAR91316/Konvert/issues/new?title=${issueTitle}&body=${issueBody}&labels=${labels}`;
-    
+    const url = createGitHubIssueUrl(category, rating, title, description, email, includeDiagnostics);
     window.open(url, '_blank', 'noopener,noreferrer');
     showToast('Opening GitHub Issue template...', 'info');
   };
 
   const handleCopyMarkdown = async () => {
     try {
-      await navigator.clipboard.writeText(formatMarkdownReport());
+      const markdown = formatFeedbackMarkdown(category, rating, title, description, email, includeDiagnostics);
+      await navigator.clipboard.writeText(markdown);
       setCopied(true);
       showToast('Feedback formatted as Markdown and copied to clipboard!', 'success');
-      setTimeout(() => setCopied(false), 2000);
+      setTimeout(() => setCopied(false), 2500);
     } catch {
-      showToast('Failed to copy to clipboard', 'error');
+      showToast('Failed to copy feedback to clipboard', 'error');
     }
   };
 
-  const resetForm = () => {
-    setSubmitted(false);
-    setTitle('');
-    setDescription('');
-    setEmail('');
-    setRating(5);
-  };
-
   return (
-    <main className="page-container" style={{ paddingBottom: '5rem' }}>
+    <main className="page-container" style={{ paddingBottom: '4rem' }}>
       <Link to="/" className="back-link" style={{ marginBottom: '2rem' }}>
         <ArrowLeft style={{ width: '16px', height: '16px' }} />
         <span>Back to Home</span>
@@ -153,49 +100,63 @@ ${includeDiagnostics ? `#### Environment Diagnostics:
         </p>
       </section>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem', alignItems: 'start' }}>
-        {/* Form Column */}
-        <div className="solid-card" style={{ padding: '2rem' }}>
+      {/* Main Feedback Studio Layout */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.4fr) minmax(0, 1fr)', gap: '2rem', alignItems: 'start' }}>
+        {/* Left: Interactive Feedback Form */}
+        <section className="solid-card" style={{ padding: '2rem' }}>
+          <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <Sparkles style={{ width: '20px', height: '20px', color: 'var(--emerald-500)' }} />
+            <span>Submit Your Feedback</span>
+          </h2>
+
           {submitted ? (
-            <div style={{ textAlign: 'center', padding: '3rem 1rem' }}>
-              <div className="icon-badge" style={{ width: '56px', height: '56px', margin: '0 auto 1.5rem auto' }}>
-                <CheckCircle2 style={{ width: '32px', height: '32px', color: 'var(--emerald-500)' }} />
+            <div style={{ textAlign: 'center', padding: '2rem 1rem' }}>
+              <div style={{ width: '56px', height: '56px', borderRadius: '50%', background: 'rgba(16, 185, 129, 0.12)', border: '1px solid rgba(16, 185, 129, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 1rem auto' }}>
+                <CheckCircle2 className="text-emerald" style={{ width: '32px', height: '32px' }} />
               </div>
-              <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.5rem' }}>Feedback Received</h2>
+              <h3 style={{ fontSize: '1.35rem', fontWeight: 700, marginBottom: '0.5rem' }}>Feedback Received!</h3>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', maxWidth: '440px', margin: '0 auto 2rem auto', lineHeight: 1.6 }}>
-                Thank you for taking the time to share your feedback. Your suggestions directly impact the Konvert roadmap.
+                Your feedback has been saved locally on your device. You can also file a public issue on GitHub for community discussion.
               </p>
-              <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-                <button onClick={resetForm} className="btn btn-primary">
-                  Submit Another Response
+              <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSubmitted(false);
+                    setTitle('');
+                    setDescription('');
+                    setEmail('');
+                  }}
+                  className="btn btn-secondary-solid"
+                >
+                  <span>Submit Another Response</span>
                 </button>
-                <Link to="/" className="btn btn-secondary-solid">
-                  Return Home
-                </Link>
+                <button
+                  type="button"
+                  onClick={handleOpenGitHubIssue}
+                  className="btn btn-primary"
+                >
+                  <GithubIcon style={{ width: '16px', height: '16px' }} />
+                  <span>Post on GitHub Issues</span>
+                </button>
               </div>
             </div>
           ) : (
             <form onSubmit={handleInAppSubmit} className="feedback-form">
-              <h2 style={{ fontSize: '1.3rem', fontWeight: 700, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <MessageSquare style={{ width: '20px', height: '20px', color: 'var(--emerald-500)' }} />
-                <span>Submit Feedback</span>
-              </h2>
-
-              {/* Category Segmented Grid */}
+              {/* Category Selector */}
               <div className="form-group">
                 <label className="form-label">Category</label>
                 <div className="category-segmented-grid">
                   {CATEGORIES.map(cat => {
                     const Icon = cat.icon;
-                    const isSelected = category === cat.id;
                     return (
                       <button
                         key={cat.id}
                         type="button"
-                        className={`category-pill-btn ${isSelected ? 'active' : ''}`}
+                        className={`category-pill-btn${category === cat.id ? ' active' : ''}`}
                         onClick={() => setCategory(cat.id)}
                       >
-                        <Icon style={{ width: '15px', height: '15px' }} />
+                        <Icon style={{ width: '14px', height: '14px' }} />
                         <span>{cat.label}</span>
                       </button>
                     );
@@ -203,139 +164,141 @@ ${includeDiagnostics ? `#### Environment Diagnostics:
                 </div>
               </div>
 
-              {/* Star Rating */}
+              {/* Experience Rating */}
               <div className="form-group">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
-                  <label className="form-label" style={{ margin: 0 }}>Rating</label>
-                  <span style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--emerald-500)' }}>
-                    {RATING_LABELS[(hoverRating || rating) - 1]} ({hoverRating || rating}/5)
+                <label className="form-label" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span>Experience Rating</span>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--emerald-500)', fontWeight: 600 }}>
+                    {RATING_LABELS[(hoverRating ?? rating) - 1]}
                   </span>
-                </div>
+                </label>
                 <div className="star-rating-row" onMouseLeave={() => setHoverRating(null)}>
-                  {[1, 2, 3, 4, 5].map(val => {
-                    const isFilled = (hoverRating !== null ? hoverRating : rating) >= val;
-                    return (
-                      <button
-                        key={val}
-                        type="button"
-                        className="star-btn"
-                        onClick={() => setRating(val)}
-                        onMouseEnter={() => setHoverRating(val)}
-                        aria-label={`Rate ${val} stars`}
-                      >
-                        <Star
-                          style={{
-                            width: '24px',
-                            height: '24px',
-                            fill: isFilled ? '#eab308' : 'none',
-                            stroke: isFilled ? '#eab308' : 'var(--border-color)',
-                            transition: 'all 0.15s ease'
-                          }}
-                        />
-                      </button>
-                    );
-                  })}
+                  {[1, 2, 3, 4, 5].map(star => (
+                    <button
+                      key={star}
+                      type="button"
+                      className="star-btn"
+                      onMouseEnter={() => setHoverRating(star)}
+                      onClick={() => setRating(star)}
+                      aria-label={`Rate ${star} star`}
+                    >
+                      <Star
+                        style={{
+                          width: '26px',
+                          height: '26px',
+                          fill: star <= (hoverRating ?? rating) ? '#f59e0b' : 'none',
+                          color: star <= (hoverRating ?? rating) ? '#f59e0b' : 'var(--text-muted)',
+                          transition: 'color 0.15s ease, fill 0.15s ease'
+                        }}
+                      />
+                    </button>
+                  ))}
                 </div>
               </div>
 
-              {/* Subject */}
+              {/* Summary Title */}
               <div className="form-group">
-                <label htmlFor="page-feedback-title" className="form-label">Subject / Title</label>
+                <label className="form-label" htmlFor="feedback-title">Title / Summary (Optional)</label>
                 <input
-                  id="page-feedback-title"
+                  id="feedback-title"
                   type="text"
                   className="form-input"
-                  placeholder="Summary (e.g. Offline PDF generation enhancement)"
+                  placeholder="e.g., Add batch image rotation option"
                   value={title}
                   onChange={e => setTitle(e.target.value)}
-                  maxLength={120}
                 />
               </div>
 
-              {/* Description */}
+              {/* Detailed Description */}
               <div className="form-group">
-                <label htmlFor="page-feedback-desc" className="form-label">
+                <label className="form-label" htmlFor="feedback-description">
                   Description <span style={{ color: '#ef4444' }}>*</span>
                 </label>
                 <textarea
-                  id="page-feedback-desc"
+                  id="feedback-description"
+                  required
                   className="form-textarea"
-                  rows={5}
-                  placeholder="Provide details, steps to reproduce, or workflow suggestions..."
+                  rows={4}
+                  placeholder="What happened? What would you like to see improved or added?"
                   value={description}
                   onChange={e => setDescription(e.target.value)}
-                  required
                 />
               </div>
 
-              {/* Email */}
+              {/* Optional Email for followups */}
               <div className="form-group">
-                <label htmlFor="page-feedback-email" className="form-label">
-                  Contact Email <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)', fontWeight: 400 }}>(optional)</span>
+                <label className="form-label" htmlFor="feedback-email">
+                  Contact Email (Optional)
                 </label>
                 <input
-                  id="page-feedback-email"
+                  id="feedback-email"
                   type="email"
                   className="form-input"
-                  placeholder="name@example.com (only if you want follow-up)"
+                  placeholder="developer@example.com (only if you'd like follow-ups)"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
                 />
               </div>
 
-              {/* Diagnostics */}
-              <div className="diagnostics-box" style={{ marginBottom: '1.5rem' }}>
+              {/* Client Diagnostics Toggle */}
+              <div className="diagnostics-box">
                 <label className="diagnostics-toggle-label">
                   <input
                     type="checkbox"
                     checked={includeDiagnostics}
                     onChange={e => setIncludeDiagnostics(e.target.checked)}
-                    style={{ accentColor: 'var(--emerald-500)', cursor: 'pointer' }}
+                    style={{ accentColor: 'var(--emerald-500)', width: '16px', height: '16px' }}
                   />
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem' }}>
-                    <ShieldCheck style={{ width: '16px', height: '16px', color: 'var(--emerald-500)' }} />
-                    <span>Include anonymous environment diagnostics (OS, Browser, Screen)</span>
-                  </div>
+                  <span style={{ fontSize: '0.85rem', color: 'var(--text-main)', fontWeight: 500 }}>
+                    Include client environment diagnostics (OS, screen resolution, browser version)
+                  </span>
                 </label>
               </div>
 
-              {/* Actions */}
+              {/* Submission Actions */}
               <div className="feedback-actions">
                 <button
                   type="submit"
                   disabled={isSubmitting}
                   className="btn btn-primary"
-                  style={{ flex: 1, padding: '0.85rem 1.5rem' }}
+                  style={{ flex: 1 }}
                 >
-                  <Send style={{ width: '16px', height: '16px' }} />
-                  <span>{isSubmitting ? 'Submitting...' : 'Submit Feedback'}</span>
+                  <Send style={{ width: '15px', height: '15px' }} />
+                  <span>{isSubmitting ? 'Submitting...' : 'Submit In-App'}</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={handleOpenGitHubIssue}
                   className="btn btn-secondary-solid"
+                  title="Prefill a GitHub Issue on the official repository"
                 >
-                  <ExternalLink style={{ width: '16px', height: '16px' }} />
-                  <span>GitHub Issue</span>
+                  <GithubIcon style={{ width: '15px', height: '15px' }} />
+                  <span>Open GitHub Issue</span>
+                  <ExternalLink style={{ width: '13px', height: '13px' }} />
                 </button>
 
                 <button
                   type="button"
                   onClick={handleCopyMarkdown}
-                  className="btn btn-secondary-solid"
+                  className="btn btn-outline"
+                  title="Copy formatted markdown report to clipboard"
                 >
-                  {copied ? <Check style={{ width: '16px', height: '16px', color: 'var(--emerald-500)' }} /> : <Copy style={{ width: '16px', height: '16px' }} />}
-                  <span>{copied ? 'Copied' : 'Copy'}</span>
+                  {copied ? (
+                    <Check className="text-emerald" style={{ width: '15px', height: '15px' }} />
+                  ) : (
+                    <Copy style={{ width: '15px', height: '15px' }} />
+                  )}
+                  <span>{copied ? 'Copied' : 'Copy MD'}</span>
                 </button>
               </div>
             </form>
           )}
-        </div>
+        </section>
 
-        {/* Sidebar Information Column */}
+        {/* Right: Repository Links & Privacy Assurance */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          {/* Quick Channels */}
+          {/* Public Issue Tracker Card */}
           <div className="solid-card" style={{ padding: '1.75rem' }}>
             <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <GithubIcon style={{ width: '18px', height: '18px', color: 'var(--text-main)' }} />
@@ -346,7 +309,7 @@ ${includeDiagnostics ? `#### Environment Diagnostics:
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               <a
-                href="https://github.com/TUSHAR91316/Konvert/issues"
+                href={GITHUB_ISSUES_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-secondary-solid"
@@ -356,7 +319,7 @@ ${includeDiagnostics ? `#### Environment Diagnostics:
                 <ExternalLink style={{ width: '14px', height: '14px' }} />
               </a>
               <a
-                href="https://github.com/TUSHAR91316/Konvert/discussions"
+                href={GITHUB_DISCUSSIONS_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-secondary-solid"
@@ -368,17 +331,17 @@ ${includeDiagnostics ? `#### Environment Diagnostics:
             </div>
           </div>
 
-          {/* Privacy & Handling Note */}
-          <div className="solid-card" style={{ padding: '1.75rem' }}>
-            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <ShieldCheck style={{ width: '18px', height: '18px', color: 'var(--emerald-500)' }} />
-              <span>How We Handle Feedback</span>
-            </h3>
-            <ul style={{ paddingLeft: '1.25rem', color: 'var(--text-muted)', fontSize: '0.88rem', display: 'grid', gap: '0.6rem', margin: 0 }}>
-              <li><strong>Zero tracking:</strong> We do not track identity, cookies, or telemetry.</li>
-              <li><strong>Direct review:</strong> Suggestions are triaged directly into our project roadmap.</li>
-              <li><strong>No spam:</strong> Your email is only used if we need clarification on a bug report.</li>
-            </ul>
+          {/* Privacy Box */}
+          <div className="solid-card" style={{ padding: '1.75rem', borderLeft: '4px solid var(--emerald-500)' }}>
+            <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
+              <ShieldCheck className="text-emerald" style={{ width: '22px', height: '22px', flexShrink: 0, marginTop: '2px' }} />
+              <div>
+                <h4 style={{ margin: '0 0 0.35rem 0', fontSize: '1rem', fontWeight: 700 }}>Privacy Assurance</h4>
+                <p style={{ margin: 0, color: 'var(--text-muted)', fontSize: '0.85rem', lineHeight: 1.5 }}>
+                  Konvert collects zero telemetry or analytical cookies. When you submit feedback in-app, it is stored strictly inside your browser&apos;s local storage.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </div>

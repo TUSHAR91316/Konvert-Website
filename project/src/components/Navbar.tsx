@@ -1,26 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { Zap, Moon, Sun, Menu, X, MessageSquare } from 'lucide-react';
+import { useTheme } from '../hooks/useTheme';
 
 interface NavbarProps {
   onOpenFeedback?: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ onOpenFeedback }) => {
-  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
-    const saved = localStorage.getItem('theme');
-    if (saved === 'dark' || saved === 'light') return saved;
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-  });
+const NAV_ITEMS = [
+  { to: '/', label: 'Home' },
+  { to: '/studio', label: 'Studio' },
+  { to: '/roadmap', label: 'Roadmap' },
+  { to: '/self-hosting', label: 'Self-Hosting' },
+  { to: '/community', label: 'Community' },
+  { to: '/faq', label: 'FAQ' },
+  { to: '/feedback', label: 'Feedback' },
+] as const;
 
+export const Navbar: React.FC<NavbarProps> = ({ onOpenFeedback }) => {
+  const { theme, toggleTheme } = useTheme();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const htmlElement = document.documentElement;
-    htmlElement.setAttribute('data-theme', theme);
-    localStorage.setItem('theme', theme);
-  }, [theme]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 10);
@@ -28,7 +28,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenFeedback }) => {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  const toggleTheme = () => setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
   const closeMobile = () => setMobileMenuOpen(false);
 
   useEffect(() => {
@@ -51,15 +50,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenFeedback }) => {
         </Link>
 
         <div className={`nav-links${mobileMenuOpen ? ' active' : ''}`} id="nav-links">
-          {[
-            { to: '/', label: 'Home' },
-            { to: '/studio', label: 'Studio' },
-            { to: '/roadmap', label: 'Roadmap' },
-            { to: '/self-hosting', label: 'Self-Hosting' },
-            { to: '/community', label: 'Community' },
-            { to: '/faq', label: 'FAQ' },
-            { to: '/feedback', label: 'Feedback' },
-          ].map(({ to, label }) => (
+          {NAV_ITEMS.map(({ to, label }) => (
             <NavLink
               key={to}
               to={to}

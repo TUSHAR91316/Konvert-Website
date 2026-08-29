@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Zap, ExternalLink, MessageSquare } from 'lucide-react';
 import { GithubIcon } from './GithubIcon';
+import { GITHUB_REPO_URL, GITHUB_RELEASES_URL } from '../constants/links';
 
 interface FooterProps {
   onOpenFeedback?: () => void;
@@ -36,7 +37,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenFeedback }) => {
               <Link to="/studio">Conversion Studio</Link>
               <Link to="/roadmap">Roadmap &amp; Releases</Link>
               <Link to="/self-hosting">Self-Hosting Guide</Link>
-              <a href="https://github.com/TUSHAR91316/Konvert/releases" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+              <a href={GITHUB_RELEASES_URL} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
                 <span>Download APK</span>
                 <ExternalLink style={{ width: '12px', height: '12px' }} />
               </a>
@@ -79,7 +80,7 @@ export const Footer: React.FC<FooterProps> = ({ onOpenFeedback }) => {
             <h4>Open Source</h4>
             <div className="footer-col-links">
               <a
-                href="https://github.com/TUSHAR91316/Konvert"
+                href={GITHUB_REPO_URL}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}

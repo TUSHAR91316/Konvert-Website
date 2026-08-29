@@ -1,13 +1,47 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Bell, Lightbulb, MessageCircle, Wrench, MessageSquare, ExternalLink } from 'lucide-react';
 import { GithubIcon } from '../components/GithubIcon';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
+import { GITHUB_DISCUSSIONS_URL } from '../constants/links';
+
+const DISCUSSION_CHANNELS = [
+  {
+    title: 'Announcements',
+    icon: Bell,
+    iconColor: 'var(--emerald-500)',
+    description: 'Official release notes, architecture updates, and security disclosures.',
+    link: `${GITHUB_DISCUSSIONS_URL}/categories/announcements`,
+    cta: 'View Announcements',
+  },
+  {
+    title: 'Feature Requests',
+    icon: Lightbulb,
+    iconColor: '#eab308',
+    description: 'Suggest new formats, compression algorithms, and vote on community ideas.',
+    link: `${GITHUB_DISCUSSIONS_URL}/categories/feature-requests`,
+    cta: 'View Suggestions',
+  },
+  {
+    title: 'Troubleshooting',
+    icon: Wrench,
+    iconColor: '#f97316',
+    description: 'Get help configuring Docker, resolving CORS issues, and setting up tunnels.',
+    link: `${GITHUB_DISCUSSIONS_URL}/categories/troubleshooting`,
+    cta: 'Troubleshoot',
+  },
+  {
+    title: 'General Q&A',
+    icon: MessageCircle,
+    iconColor: '#3b82f6',
+    description: 'Casual discussions, questions about local-first privacy, and use-cases.',
+    link: `${GITHUB_DISCUSSIONS_URL}/categories/general`,
+    cta: 'Browse Topics',
+  },
+] as const;
 
 export const Community: React.FC = () => {
-  useEffect(() => {
-    document.title = 'Community — Konvert';
-    return () => { document.title = 'Konvert'; };
-  }, []);
+  useDocumentTitle('Community — Konvert');
 
   return (
     <main className="page-container" style={{ paddingBottom: '4rem' }}>
@@ -28,93 +62,30 @@ export const Community: React.FC = () => {
 
       {/* Discussion Channels Grid */}
       <section style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1.5rem', marginBottom: '3rem' }}>
-        <a
-          href="https://github.com/TUSHAR91316/Konvert/discussions/categories/announcements"
-          className="solid-card"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ padding: '1.5rem', textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column' }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
-            <div className="icon-badge">
-              <Bell style={{ width: '18px', height: '18px', color: 'var(--emerald-500)' }} />
+        {DISCUSSION_CHANNELS.map(({ title, icon: Icon, iconColor, description, link, cta }) => (
+          <a
+            key={title}
+            href={link}
+            className="solid-card"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ padding: '1.5rem', textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column' }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
+              <div className="icon-badge">
+                <Icon style={{ width: '18px', height: '18px', color: iconColor }} />
+              </div>
+              <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700 }}>{title}</h3>
             </div>
-            <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700 }}>Announcements</h3>
-          </div>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', lineHeight: 1.5, flex: 1, margin: 0 }}>
-            Official release notes, architecture updates, and security disclosures.
-          </p>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: 'var(--emerald-500)', fontWeight: 600, fontSize: '0.85rem', marginTop: '1rem' }}>
-            <span>View Announcements</span>
-            <ExternalLink style={{ width: '13px', height: '13px' }} />
-          </div>
-        </a>
-
-        <a
-          href="https://github.com/TUSHAR91316/Konvert/discussions/categories/feature-requests"
-          className="solid-card"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ padding: '1.5rem', textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column' }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
-            <div className="icon-badge">
-              <Lightbulb style={{ width: '18px', height: '18px', color: '#eab308' }} />
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', lineHeight: 1.5, flex: 1, margin: 0 }}>
+              {description}
+            </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: 'var(--emerald-500)', fontWeight: 600, fontSize: '0.85rem', marginTop: '1rem' }}>
+              <span>{cta}</span>
+              <ExternalLink style={{ width: '13px', height: '13px' }} />
             </div>
-            <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700 }}>Feature Requests</h3>
-          </div>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', lineHeight: 1.5, flex: 1, margin: 0 }}>
-            Suggest new formats, compression algorithms, and vote on community ideas.
-          </p>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: 'var(--emerald-500)', fontWeight: 600, fontSize: '0.85rem', marginTop: '1rem' }}>
-            <span>View Suggestions</span>
-            <ExternalLink style={{ width: '13px', height: '13px' }} />
-          </div>
-        </a>
-
-        <a
-          href="https://github.com/TUSHAR91316/Konvert/discussions/categories/troubleshooting"
-          className="solid-card"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ padding: '1.5rem', textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column' }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
-            <div className="icon-badge">
-              <Wrench style={{ width: '18px', height: '18px', color: '#f97316' }} />
-            </div>
-            <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700 }}>Troubleshooting</h3>
-          </div>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', lineHeight: 1.5, flex: 1, margin: 0 }}>
-            Get help configuring Docker, resolving CORS issues, and setting up tunnels.
-          </p>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: 'var(--emerald-500)', fontWeight: 600, fontSize: '0.85rem', marginTop: '1rem' }}>
-            <span>Troubleshoot</span>
-            <ExternalLink style={{ width: '13px', height: '13px' }} />
-          </div>
-        </a>
-
-        <a
-          href="https://github.com/TUSHAR91316/Konvert/discussions/categories/general"
-          className="solid-card"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ padding: '1.5rem', textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column' }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
-            <div className="icon-badge">
-              <MessageCircle style={{ width: '18px', height: '18px', color: '#3b82f6' }} />
-            </div>
-            <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700 }}>General Q&amp;A</h3>
-          </div>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', lineHeight: 1.5, flex: 1, margin: 0 }}>
-            Casual discussions, questions about local-first privacy, and use-cases.
-          </p>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: 'var(--emerald-500)', fontWeight: 600, fontSize: '0.85rem', marginTop: '1rem' }}>
-            <span>Browse Topics</span>
-            <ExternalLink style={{ width: '13px', height: '13px' }} />
-          </div>
-        </a>
+          </a>
+        ))}
       </section>
 
       {/* Feedback Hub Bridge Banner */}
@@ -131,7 +102,7 @@ export const Community: React.FC = () => {
             <span>Open Feedback Hub</span>
           </Link>
           <a
-            href="https://github.com/TUSHAR91316/Konvert/discussions"
+            href={GITHUB_DISCUSSIONS_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="btn btn-secondary-solid"

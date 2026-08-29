@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Terminal, Copy, Check, Shield, Network, Zap, CloudLightning } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
+import { VIRUSTOTAL_SIGNUP_URL, NGROK_DASHBOARD_URL } from '../constants/links';
 
 interface CopyBtnProps {
   text: string;
@@ -17,8 +19,7 @@ const CopyButton: React.FC<CopyBtnProps> = ({ text }) => {
       setCopied(true);
       showToast('Command copied to clipboard!', 'success');
       setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error('Failed to copy text', err);
+    } catch {
       showToast('Failed to copy text', 'error');
     }
   };
@@ -35,10 +36,7 @@ const CopyButton: React.FC<CopyBtnProps> = ({ text }) => {
 };
 
 export const SelfHosting: React.FC = () => {
-  useEffect(() => {
-    document.title = 'Self-Hosting Guide — Konvert';
-    return () => { document.title = 'Konvert'; };
-  }, []);
+  useDocumentTitle('Self-Hosting Guide — Konvert');
 
   const dockerComposeCmd = `docker-compose up -d --build`;
   const runDockerCmd = `docker run -d -p 8080:8080 --name konvert-backend tushar91316/konvert-backend:latest`;
@@ -90,7 +88,7 @@ export const SelfHosting: React.FC = () => {
           To allow your mobile device to reach your home machine securely over cellular data or Wi-Fi, create a secure tunnel:
         </p>
         <ol style={{ paddingLeft: '1.25rem', color: 'var(--text-muted)', display: 'grid', gap: '0.4rem', fontSize: '0.925rem' }}>
-          <li>Sign up at <a href="https://dashboard.ngrok.com/" target="_blank" rel="noreferrer" style={{ color: 'var(--text-main)', textDecoration: 'underline' }}>ngrok.com</a> (completely free).</li>
+          <li>Sign up at <a href={NGROK_DASHBOARD_URL} target="_blank" rel="noreferrer" style={{ color: 'var(--text-main)', textDecoration: 'underline' }}>ngrok.com</a> (completely free).</li>
           <li>Retrieve your <strong>Auth Token</strong> from the dashboard.</li>
           <li>Claim a <strong>Free Static Domain</strong> (e.g., <code style={{ fontFamily: 'monospace' }}>your-domain.ngrok-free.app</code>) under the Domains section.</li>
         </ol>
@@ -218,7 +216,7 @@ export const SelfHosting: React.FC = () => {
             <ol style={{ paddingLeft: '1.15rem', color: 'var(--text-muted)', fontSize: '0.86rem', display: 'grid', gap: '0.45rem', margin: 0, lineHeight: 1.5 }}>
               <li>
                 Sign up for a free account at{' '}
-                <a href="https://www.virustotal.com/gui/join-us" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--emerald-500)', textDecoration: 'underline' }}>
+                <a href={VIRUSTOTAL_SIGNUP_URL} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--emerald-500)', textDecoration: 'underline' }}>
                   virustotal.com
                 </a>.
               </li>

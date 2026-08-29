@@ -1,42 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Calendar, Download, Package, WifiOff, RefreshCw, ChevronDown, ChevronUp } from 'lucide-react';
 import { GithubIcon } from '../components/GithubIcon';
-
-interface GitHubAsset {
-  name: string;
-  size: number;
-  download_count: number;
-  browser_download_url: string;
-}
-
-interface GitHubRelease {
-  tag_name: string;
-  name: string;
-  published_at: string;
-  prerelease: boolean;
-  body: string;
-  html_url: string;
-  assets: GitHubAsset[];
-}
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
+import { useGitHubReleases } from '../hooks/useGitHubReleases';
+import { GITHUB_RELEASES_URL } from '../constants/links';
 
 export const Roadmap: React.FC = () => {
-  const [releases, setReleases] = useState<GitHubRelease[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [stats, setStats] = useState({ versions: 0, latest: '—', downloads: '—' });
+  useDocumentTitle('Roadmap & Releases — Konvert');
+
+  const { releases, stats, loading, error, refresh } = useGitHubReleases('V1.7.0');
   const [expandedItems, setExpandedItems] = useState<Record<number, boolean>>({});
 
-  useEffect(() => {
-    document.title = 'Roadmap & Releases — Konvert';
-    loadReleases();
-    return () => { document.title = 'Konvert'; };
-  }, []);
-
-  // Mini markdown → HTML parser (replicated from previous HTML custom parser)
+  // Mini markdown → HTML parser
   const parseMarkdown = (md: string) => {
     if (!md) return '';
-    let html = md
+    const html = md
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
@@ -50,7 +29,7 @@ export const Roadmap: React.FC = () => {
       .replace(/`([^`]+)`/g, '<code>$1</code>')
       .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
       .replace(/^---$/gm, '<hr>')
-      .replace(/^\*   (.+)$/gm, '<li>$1</li>')
+      .replace(/^\* {3}(.+)$/gm, '<li>$1</li>')
       .replace(/^\*\s+(.+)$/gm, '<li>$1</li>')
       .replace(/^-\s+(.+)$/gm, '<li>$1</li>')
       .replace(/^\d+\.\s+(.+)$/gm, '<li>$1</li>')
@@ -72,51 +51,8 @@ export const Roadmap: React.FC = () => {
   };
 
   const formatBytes = (bytes: number) => {
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(0) + ' KB';
-    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
-  };
-
-  const loadReleases = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const cacheKey = 'konvert_releases_cache';
-      const cacheTimeKey = 'konvert_releases_time';
-      const cacheDuration = 15 * 60 * 1000; // 15 mins
-
-      let data: GitHubRelease[];
-      const cachedData = sessionStorage.getItem(cacheKey);
-      const cachedTime = sessionStorage.getItem(cacheTimeKey);
-
-      if (cachedData && cachedTime && (Date.now() - parseInt(cachedTime)) < cacheDuration) {
-        data = JSON.parse(cachedData);
-      } else {
-        const res = await fetch(
-          'https://api.github.com/repos/TUSHAR91316/Konvert/releases?per_page=30',
-          { headers: { 'Accept': 'application/vnd.github+json' } }
-        );
-        if (!res.ok) throw new Error(`GitHub API error: ${res.status}`);
-        data = await res.json();
-        sessionStorage.setItem(cacheKey, JSON.stringify(data));
-        sessionStorage.setItem(cacheTimeKey, Date.now().toString());
-      }
-
-      setReleases(data);
-
-      const totalDownloads = data.reduce((sum, r) =>
-        sum + r.assets.reduce((s, a) => s + a.download_count, 0), 0);
-
-      setStats({
-        versions: data.length,
-        latest: data[0]?.tag_name ?? '—',
-        downloads: totalDownloads >= 1000 ? (totalDownloads / 1000).toFixed(1) + 'k' : String(totalDownloads)
-      });
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Could not reach GitHub API.';
-      setError(message);
-    } finally {
-      setLoading(false);
-    }
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
   const toggleExpand = (idx: number) => {
@@ -160,24 +96,24 @@ export const Roadmap: React.FC = () => {
 
       {/* Timeline Section */}
       <section className="timeline-section">
-        <div className="timeline container">
+        <div className="container">
           {loading && (
-            <div className="loader-wrapper" style={{ margin: '4rem auto' }}>
-              <div className="spinner"></div>
-              <p style={{ marginTop: '1rem', color: 'var(--text-muted)' }}>Fetching latest releases from GitHub…</p>
+            <div className="loader-wrapper">
+              <div className="spinner" style={{ margin: '0 auto 1.5rem auto' }} />
+              <p style={{ fontWeight: 600 }}>Fetching latest releases from GitHub...</p>
             </div>
           )}
 
           {error && (
-            <div className="error-box" style={{ textAlign: 'center', padding: '3rem 2rem' }}>
-              <WifiOff style={{ width: '48px', height: '48px', color: '#f87171', marginBottom: '1rem' }} />
-              <h3 style={{ color: 'var(--text-main)', marginBottom: '0.5rem' }}>Failed to load releases</h3>
+            <div className="error-box">
+              <WifiOff style={{ width: '40px', height: '40px', color: '#ef4444', margin: '0 auto 1rem auto' }} />
+              <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem' }}>Failed to Load Releases</h3>
               <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem' }}>{error}</p>
               <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
-                <button className="retry-btn" onClick={loadReleases} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+                <button className="retry-btn" onClick={() => { void refresh(); }} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
                   <RefreshCw style={{ width: '16px', height: '16px' }} /> Retry
                 </button>
-                <a href="https://github.com/TUSHAR91316/Konvert/releases" target="_blank" rel="noopener noreferrer" className="retry-btn" style={{ textDecoration: 'none', background: 'transparent', border: '2px solid var(--border-color)', color: 'var(--text-main)', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+                <a href={GITHUB_RELEASES_URL} target="_blank" rel="noopener noreferrer" className="retry-btn" style={{ textDecoration: 'none', background: 'transparent', border: '2px solid var(--border-color)', color: 'var(--text-main)', display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
                   <GithubIcon style={{ width: '16px', height: '16px' }} /> View on GitHub
                 </a>
               </div>
@@ -188,77 +124,101 @@ export const Roadmap: React.FC = () => {
             const apkAsset = release.assets.find(a => a.name.endsWith('.apk') && !a.name.endsWith('.sha1'));
             const zipAsset = release.assets.find(a => a.name.endsWith('.zip'));
             
-            // Determine release tag styles
+            const isLatest = idx === 0 && !release.prerelease;
             const isPrerelease = release.prerelease;
-            const nodeTypeClass = isPrerelease ? 'patch' : idx === 0 ? 'latest' : idx === 1 ? 'stable' : 'old';
+            const isMajorMinor = /v?\d+\.\d+\.0$/i.test(release.tag_name);
 
-            // Long body collapse logic
-            const isLong = (release.body || '').length > 400;
-            const isExpanded = !!expandedItems[idx];
-            const displayBodyHtml = isLong && !isExpanded 
-              ? parseMarkdown(release.body.slice(0, 400) + '...')
-              : parseMarkdown(release.body);
+            let nodeClass = 'old';
+            if (isLatest) nodeClass = 'latest';
+            else if (isPrerelease) nodeClass = 'prerel';
+            else if (isMajorMinor) nodeClass = 'stable';
+            else nodeClass = 'patch';
+
+            let nodeLabel = release.tag_name.replace(/^v/i, '');
+            if (nodeLabel.length > 5) nodeLabel = nodeLabel.substring(0, 5);
+
+            const isCollapsed = !expandedItems[idx] && release.body && release.body.length > 500;
 
             return (
-              <div key={idx} className="release-item reveal visible" style={{ transitionDelay: `${Math.min(idx * 0.05, 0.4)}s` }}>
-                <div className={`release-node ${nodeTypeClass}`}>{releases.length - idx}</div>
-                <div className="release-card">
-                  <div className="release-header">
-                    <div>
-                      <div className="release-tag-group" style={{ marginBottom: '0.4rem', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                        <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-muted)' }}>{release.tag_name}</span>
-                        {idx === 0 && !isPrerelease && <span className="release-tag tag-latest">Latest</span>}
-                        {isPrerelease && <span className="release-tag tag-prerel">Pre-release</span>}
-                        {idx > 0 && !isPrerelease && <span className="release-tag tag-stable">Stable</span>}
-                      </div>
-                      <h2 className="release-name">{release.name || release.tag_name}</h2>
-                    </div>
-                    <div className="release-meta" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: 'var(--text-muted)' }}>
-                      <Calendar style={{ width: '14px', height: '14px' }} />
-                      {formatDate(release.published_at)}
-                    </div>
+              <div key={release.tag_name || idx} className="timeline" style={{ position: 'relative' }}>
+                <div className="release-item">
+                  <div className={`release-node ${nodeClass}`}>
+                    {nodeLabel}
                   </div>
 
-                  {release.body && (
-                    <>
-                      <div className="release-divider"></div>
-                      <div className={`body-wrapper ${isLong && !isExpanded ? 'collapsed' : ''}`}>
-                        <div className="release-body" dangerouslySetInnerHTML={{ __html: displayBodyHtml }} />
+                  <div className="release-card">
+                    <div className="release-header">
+                      <div>
+                        <div className="release-tag-group">
+                          {isLatest && <span className="release-tag tag-latest">Latest</span>}
+                          {isPrerelease && <span className="release-tag tag-prerel">Pre-release</span>}
+                          {!isLatest && !isPrerelease && isMajorMinor && <span className="release-tag tag-stable">Stable</span>}
+                          {!isLatest && !isPrerelease && !isMajorMinor && <span className="release-tag tag-patch">Patch</span>}
+                        </div>
+                        <h2 className="release-name">{release.name || release.tag_name}</h2>
                       </div>
-                      {isLong && (
-                        <button className="toggle-body-btn" onClick={() => toggleExpand(idx)} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', marginTop: '0.5rem' }}>
-                          {isExpanded ? (
-                            <>
-                              <ChevronUp style={{ width: '14px', height: '14px' }} /> Show less
-                            </>
-                          ) : (
-                            <>
-                              <ChevronDown style={{ width: '14px', height: '14px' }} /> Show more
-                            </>
-                          )}
-                        </button>
-                      )}
-                    </>
-                  )}
+                      <div className="release-meta">
+                        <Calendar style={{ width: '14px', height: '14px' }} />
+                        <span>{formatDate(release.published_at)}</span>
+                      </div>
+                    </div>
 
-                  <div className="release-divider"></div>
-                  <div className="release-footer" style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginTop: '1rem' }}>
-                    {apkAsset && (
-                      <a href={apkAsset.browser_download_url} className="release-dl-btn">
-                        <Download style={{ width: '14px', height: '14px' }} />
-                        Download APK ({formatBytes(apkAsset.size)})
-                      </a>
+                    <div className="release-divider" />
+
+                    {release.body && (
+                      <div className={`body-wrapper ${isCollapsed ? 'collapsed' : ''}`}>
+                        <div 
+                          className="release-body"
+                          dangerouslySetInnerHTML={{ __html: parseMarkdown(release.body) }}
+                        />
+                        {release.body.length > 500 && (
+                          <button 
+                            className="toggle-body-btn"
+                            onClick={() => toggleExpand(idx)}
+                          >
+                            {expandedItems[idx] ? (
+                              <><ChevronUp style={{ width: '15px', height: '15px' }} /> Show Less</>
+                            ) : (
+                              <><ChevronDown style={{ width: '15px', height: '15px' }} /> Read Full Release Notes</>
+                            )}
+                          </button>
+                        )}
+                      </div>
                     )}
-                    {zipAsset && (
-                      <a href={zipAsset.browser_download_url} className="release-dl-btn secondary">
-                        <Package style={{ width: '14px', height: '14px' }} />
-                        Backend ZIP
+
+                    <div className="release-footer">
+                      {apkAsset && (
+                        <a 
+                          href={apkAsset.browser_download_url} 
+                          className="release-dl-btn"
+                          title="Download Android APK package"
+                        >
+                          <Download style={{ width: '15px', height: '15px' }} />
+                          <span>Download APK ({formatBytes(apkAsset.size)})</span>
+                        </a>
+                      )}
+
+                      {zipAsset && (
+                        <a 
+                          href={zipAsset.browser_download_url} 
+                          className="release-dl-btn secondary"
+                          title="Download source or backend bundle"
+                        >
+                          <Package style={{ width: '15px', height: '15px' }} />
+                          <span>Download ZIP ({formatBytes(zipAsset.size)})</span>
+                        </a>
+                      )}
+
+                      <a 
+                        href={release.html_url} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="release-dl-btn secondary"
+                      >
+                        <GithubIcon style={{ width: '15px', height: '15px' }} />
+                        <span>GitHub Release</span>
                       </a>
-                    )}
-                    <a href={release.html_url} target="_blank" rel="noopener noreferrer" className="release-dl-btn secondary">
-                      <GithubIcon style={{ width: '14px', height: '14px' }} />
-                      View on GitHub
-                    </a>
+                    </div>
                   </div>
                 </div>
               </div>
