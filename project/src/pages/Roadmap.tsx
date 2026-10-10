@@ -2,13 +2,18 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Calendar, Download, Package, WifiOff, RefreshCw, ChevronDown, ChevronUp, Layers, Wrench, Sparkles } from 'lucide-react';
 import { GithubIcon } from '../components/GithubIcon';
-import { useDocumentTitle } from '../hooks/useDocumentTitle';
+import { usePageSeo } from '../hooks/usePageSeo';
 import { useGitHubReleases } from '../hooks/useGitHubReleases';
 import { GITHUB_RELEASES_URL } from '../constants/links';
 import { isMajorRelease } from '../utils/version';
 
 export const Roadmap: React.FC = () => {
-  useDocumentTitle('Roadmap & Releases — Konvert');
+  usePageSeo({
+    title: 'Roadmap & Releases — Konvert (Major Versions & Patches)',
+    description: 'Track all official Konvert releases pulled live from GitHub. Browse major milestone versions (1.x) and incremental bugfix patches (1.x.x) with complete changelogs.',
+    keywords: 'konvert roadmap, konvert github releases, offline converter apk download, konvert version history, patch notes',
+    canonicalPath: '/roadmap',
+  });
 
   const { releases, stats, loading, error, refresh } = useGitHubReleases('V1.7.0');
   const [expandedItems, setExpandedItems] = useState<Record<number, boolean>>({});

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Terminal, Copy, Check, Shield, Network, Zap, CloudLightning } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
-import { useDocumentTitle } from '../hooks/useDocumentTitle';
+import { usePageSeo } from '../hooks/usePageSeo';
 import { VIRUSTOTAL_SIGNUP_URL, NGROK_DASHBOARD_URL } from '../constants/links';
 
 interface CopyBtnProps {
@@ -36,7 +36,40 @@ const CopyButton: React.FC<CopyBtnProps> = ({ text }) => {
 };
 
 export const SelfHosting: React.FC = () => {
-  useDocumentTitle('Self-Hosting Guide — Konvert');
+  usePageSeo({
+    title: 'Self-Hosting Docker Backend Guide — Konvert',
+    description: 'Step-by-step tutorial on deploying your private Docker document conversion microservice with Ngrok and configuring VirusTotal pre-flight malware protection.',
+    keywords: 'self host document converter, docker converter setup, libreoffice headless docker, ngrok tunnel backend, private docx to pdf backend',
+    canonicalPath: '/self-hosting',
+    schema: {
+      '@context': 'https://schema.org',
+      '@type': 'HowTo',
+      'name': 'How to Deploy a Private Self-Hosted Document Conversion Backend with Docker',
+      'description': 'Configure a zero-cloud document conversion microservice using Docker and Ngrok for the Konvert app.',
+      'step': [
+        {
+          '@type': 'HowToStep',
+          'name': 'Claim a Free Static Domain',
+          'text': 'Create a free account on ngrok.com, retrieve your auth token, and claim a free static forwarding domain.'
+        },
+        {
+          '@type': 'HowToStep',
+          'name': 'Start the Docker Backend Container',
+          'text': 'Run the pre-configured Docker Compose stack or run docker run -d -p 8080:8080 tushar91316/konvert-backend:latest.'
+        },
+        {
+          '@type': 'HowToStep',
+          'name': 'Connect to Konvert Mobile App',
+          'text': 'Paste your forwarding tunnel URL into the Konvert Settings screen and verify connection.'
+        },
+        {
+          '@type': 'HowToStep',
+          'name': 'Configure VirusTotal Threat Scanning',
+          'text': 'Obtain a free API key at virustotal.com and input it into Settings for client-side SHA-256 pre-flight checks.'
+        }
+      ]
+    }
+  });
 
   const dockerComposeCmd = `docker-compose up -d --build`;
   const runDockerCmd = `docker run -d -p 8080:8080 --name konvert-backend tushar91316/konvert-backend:latest`;

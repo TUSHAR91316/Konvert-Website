@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Bell, Lightbulb, MessageCircle, Wrench, MessageSquare, ExternalLink } from 'lucide-react';
 import { GithubIcon } from '../components/GithubIcon';
-import { useDocumentTitle } from '../hooks/useDocumentTitle';
+import { usePageSeo } from '../hooks/usePageSeo';
 import { GITHUB_DISCUSSIONS_URL } from '../constants/links';
 
 const DISCUSSION_CHANNELS = [
@@ -41,7 +41,12 @@ const DISCUSSION_CHANNELS = [
 ] as const;
 
 export const Community: React.FC = () => {
-  useDocumentTitle('Community — Konvert');
+  usePageSeo({
+    title: 'Community & Discussions — Konvert',
+    description: 'Join the Konvert open-source community. Participate in feature discussions, troubleshooting, architecture RFCs, and release announcements on GitHub.',
+    keywords: 'konvert community, open source converter discussion, privacy converter forum, feature requests',
+    canonicalPath: '/community',
+  });
 
   return (
     <main className="page-container" style={{ paddingBottom: '4rem' }}>

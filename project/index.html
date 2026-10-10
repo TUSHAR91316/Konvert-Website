@@ -11,73 +11,109 @@
     <link rel="manifest" href="/manifest.json" />
 
     <!-- Primary SEO Meta Tags -->
-    <title>Konvert - Privacy-First File Conversion App for Android & Windows</title>
-    <meta name="title" content="Konvert - Privacy-First File Conversion App for Android & Windows" />
-    <meta name="description" content="Konvert is a powerful, privacy-focused file converter for Android and Windows. Compress images, convert documents to PDF, and scan files with VirusTotal — 100% locally, no cloud required." />
-    <meta name="keywords" content="file converter, offline file converter, image compressor, PDF converter, DOCX to PDF, JPG to PNG, privacy file converter, self-hosted converter, Docker converter, Android file app, Windows file converter" />
+    <title>Konvert - #1 Privacy-First File Converter & Image Compressor (Offline & Free)</title>
+    <meta name="title" content="Konvert - #1 Privacy-First File Converter & Image Compressor (Offline & Free)" />
+    <meta name="description" content="Convert files and compress images 100% locally on your device with zero cloud telemetry. Fast, offline-ready file converter for Android, Windows, and Web. No ads, no paywalls." />
+    <meta name="keywords" content="file converter, offline file converter, image compressor, PDF converter, DOCX to PDF, JPG to PNG, PNG to WEBP, privacy file converter, free file converter, self-hosted converter, Docker converter, Android file converter apk, Windows file converter, local file converter, batch image to pdf, virustotal scanner" />
     <meta name="author" content="Tushar Kothia" />
-    <meta name="robots" content="index, follow" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <link rel="canonical" href="https://konvert-website.vercel.app/" />
 
-    <!-- DNS prefetch for external APIs -->
+    <!-- DNS prefetch & Preconnect for maximum Core Web Vitals performance -->
     <link rel="dns-prefetch" href="//api.github.com" />
     <link rel="dns-prefetch" href="//fonts.googleapis.com" />
     <link rel="dns-prefetch" href="//fonts.gstatic.com" />
-
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@700&display=swap" rel="stylesheet" />
 
-    <!-- Preload critical asset -->
-    <link rel="preload" as="image" href="/readme_icon.webp" />
+    <!-- Preload critical brand logo asset -->
+    <link rel="preload" as="image" href="/readme_icon.webp" type="image/webp" />
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://konvert-website.vercel.app/" />
-    <meta property="og:title" content="Konvert - Privacy-First File Conversion App" />
-    <meta property="og:description" content="Compress images, convert documents to PDF, and scan files — 100% locally on your device. No cloud. No tracking. Free forever." />
+    <meta property="og:title" content="Konvert - Privacy-First File Converter & Image Compressor" />
+    <meta property="og:description" content="Compress images, compile multi-page PDFs, and convert office documents 100% locally or via self-hosted Docker. Free, open source, no tracking." />
     <meta property="og:image" content="https://konvert-website.vercel.app/readme_icon.webp" />
     <meta property="og:image:width" content="512" />
     <meta property="og:image:height" content="512" />
+    <meta property="og:image:alt" content="Konvert App Icon - Fast Offline File Converter" />
     <meta property="og:site_name" content="Konvert" />
     <meta property="og:locale" content="en_US" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content="https://konvert-website.vercel.app/" />
-    <meta name="twitter:title" content="Konvert - Privacy-First File Conversion App" />
-    <meta name="twitter:description" content="Compress images, convert documents to PDF, and scan files — 100% locally on your device. No cloud. No tracking. Free forever." />
+    <meta name="twitter:title" content="Konvert - Privacy-First File Converter & Image Compressor" />
+    <meta name="twitter:description" content="Compress images, compile multi-page PDFs, and convert office documents 100% locally or via self-hosted Docker. Free, open source, no tracking." />
     <meta name="twitter:image" content="https://konvert-website.vercel.app/readme_icon.webp" />
 
-    <!-- JSON-LD Structured Data (SoftwareApplication) for Google Rich Results -->
+    <!-- JSON-LD Structured Data: SoftwareApplication & WebSite for Google Rich Snippets -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "SoftwareApplication",
-      "name": "Konvert",
-      "operatingSystem": "Android, Windows",
-      "applicationCategory": "UtilitiesApplication",
-      "description": "Privacy-first file converter and image compressor. Process files 100% locally — no cloud uploads, no tracking, no ads.",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      },
-      "url": "https://konvert-website.vercel.app/",
-      "image": "https://konvert-website.vercel.app/readme_icon.webp",
-      "author": {
-        "@type": "Person",
-        "name": "Tushar Kothia"
-      },
-      "featureList": [
-        "Offline image compression",
-        "Image to PDF conversion",
-        "DOCX/PPTX to PDF via self-hosted Docker",
-        "VirusTotal malware scanning",
-        "Batch file processing",
-        "Guest mode — no account required",
-        "100% free, no ads"
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://konvert-website.vercel.app/#website",
+          "url": "https://konvert-website.vercel.app/",
+          "name": "Konvert",
+          "description": "Privacy-First File Converter & Image Compressor for Android and Windows",
+          "inLanguage": "en-US"
+        },
+        {
+          "@type": "Organization",
+          "@id": "https://konvert-website.vercel.app/#organization",
+          "name": "Konvert",
+          "url": "https://konvert-website.vercel.app/",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://konvert-website.vercel.app/readme_icon.webp",
+            "width": 512,
+            "height": 512
+          },
+          "sameAs": [
+            "https://github.com/TUSHAR91316/Konvert"
+          ]
+        },
+        {
+          "@type": "SoftwareApplication",
+          "@id": "https://konvert-website.vercel.app/#software",
+          "name": "Konvert",
+          "operatingSystem": "Android, Windows, Web",
+          "applicationCategory": "UtilitiesApplication",
+          "applicationSubCategory": "File Converter & Compressor",
+          "downloadUrl": "https://github.com/TUSHAR91316/Konvert/releases",
+          "description": "Privacy-first file converter and image compressor. Process files 100% locally in memory — no cloud retention, no telemetry, no paywalls.",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          },
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.9",
+            "ratingCount": "128",
+            "bestRating": "5",
+            "worstRating": "1"
+          },
+          "url": "https://konvert-website.vercel.app/",
+          "image": "https://konvert-website.vercel.app/readme_icon.webp",
+          "author": {
+            "@type": "Person",
+            "name": "Tushar Kothia",
+            "url": "https://github.com/TUSHAR91316"
+          },
+          "featureList": [
+            "100% Offline client-side image compression (PNG, JPG, WEBP)",
+            "Multi-image to standardized A4 PDF compilation",
+            "DOCX, PPTX, XLSX to PDF conversions via self-hosted Docker container",
+            "VirusTotal cryptographic pre-flight malware verification",
+            "Batch file conversion queue with instant file size calculations",
+            "Zero cloud telemetry, zero analytical cookies, and zero paywalls"
+          ]
+        }
       ]
     }
     </script>

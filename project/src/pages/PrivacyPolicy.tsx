@@ -1,11 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Shield } from 'lucide-react';
-import { useDocumentTitle } from '../hooks/useDocumentTitle';
+import { usePageSeo } from '../hooks/usePageSeo';
 import { GITHUB_REPO_URL } from '../constants/links';
 
 export const PrivacyPolicy: React.FC = () => {
-  useDocumentTitle('Privacy Policy — Konvert');
+  usePageSeo({
+    title: 'Privacy Policy & Zero-Cloud Guarantee — Konvert',
+    description: 'Learn how Konvert protects your data with a strict 100% on-device processing model, Bring Your Own Backend (BYOB) Docker architecture, and zero telemetry.',
+    keywords: 'konvert privacy policy, zero cloud retention converter, private file conversion, no tracking converter',
+    canonicalPath: '/privacy-policy',
+  });
 
   return (
     <main className="page-container" style={{ paddingBottom: '4rem' }}>

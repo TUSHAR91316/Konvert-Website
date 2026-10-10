@@ -1,13 +1,68 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, ChevronDown, Users, Search, MessageSquare, X } from 'lucide-react';
-import { useDocumentTitle } from '../hooks/useDocumentTitle';
+import { usePageSeo } from '../hooks/usePageSeo';
 
 interface FAQItem {
   question: string;
   answer: React.ReactNode;
   category: 'general' | 'privacy' | 'setup' | 'features';
 }
+
+const FAQ_SCHEMA = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  'mainEntity': [
+    {
+      '@type': 'Question',
+      'name': 'Is Konvert really free?',
+      'acceptedAnswer': {
+        '@type': 'Answer',
+        'text': 'Yes, Konvert is 100% free and open-source forever with zero ads, no paywalls, and no account or credit card registration required.'
+      }
+    },
+    {
+      '@type': 'Question',
+      'name': 'What platforms does Konvert currently support?',
+      'acceptedAnswer': {
+        '@type': 'Answer',
+        'text': 'Konvert is available on Android (universal APK), Windows (standalone desktop installer), and Web (in-browser Client Studio for local image processing and PDF compilation).'
+      }
+    },
+    {
+      '@type': 'Question',
+      'name': 'Does Konvert upload user documents to a cloud database?',
+      'acceptedAnswer': {
+        '@type': 'Answer',
+        'text': 'No, never. Images are processed 100% on-device in local memory. Heavy office documents are converted through your private self-hosted Docker container with zero cloud telemetry.'
+      }
+    },
+    {
+      '@type': 'Question',
+      'name': 'Why do document conversions require Docker self-hosting?',
+      'acceptedAnswer': {
+        '@type': 'Answer',
+        'text': 'Converting complex office formats like DOCX or PPTX requires a headless rendering engine (LibreOffice). Rather than routing your private files through remote servers, Konvert lets you run the microservice yourself in an isolated Docker container.'
+      }
+    },
+    {
+      '@type': 'Question',
+      'name': 'What formats can be converted offline?',
+      'acceptedAnswer': {
+        '@type': 'Answer',
+        'text': 'On-device engine supports PNG, JPG, JPEG, WEBP, and HEIC image conversions, plus multi-image A4 PDF album compilation. Office formats (DOCX, PPTX, XLSX) are converted via your self-hosted Docker backend.'
+      }
+    },
+    {
+      '@type': 'Question',
+      'name': 'How does the VirusTotal integration work?',
+      'acceptedAnswer': {
+        '@type': 'Answer',
+        'text': 'VirusTotal pre-flight scanning computes a SHA-256 cryptographic hash of your file on-device and checks 70+ antivirus engines. Raw document contents are never transmitted to VirusTotal.'
+      }
+    }
+  ]
+};
 
 const CATEGORIES = [
   { id: 'all', label: 'All Topics' },
@@ -96,7 +151,13 @@ const FAQ_DATA: FAQItem[] = [
 ];
 
 export const FAQ: React.FC = () => {
-  useDocumentTitle('FAQ — Konvert');
+  usePageSeo({
+    title: 'Frequently Asked Questions (FAQ) — Konvert',
+    description: 'Direct answers about Konvert architecture, on-device image processing, Docker self-hosting, format support, and VirusTotal threat scanning.',
+    keywords: 'konvert faq, offline file converter questions, docker document converter help, virustotal file scanner guide, privacy file converter support',
+    canonicalPath: '/faq',
+    schema: FAQ_SCHEMA,
+  });
 
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState<string>('all');

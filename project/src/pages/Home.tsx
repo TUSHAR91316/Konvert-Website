@@ -5,7 +5,7 @@ import {
   Layers, MessageSquare, ArrowRight, ShieldCheck, Cpu, HardDrive, Sliders 
 } from 'lucide-react';
 import { GithubIcon } from '../components/GithubIcon';
-import { useDocumentTitle } from '../hooks/useDocumentTitle';
+import { usePageSeo } from '../hooks/usePageSeo';
 import { useModal } from '../hooks/useModal';
 import { useGitHubReleases } from '../hooks/useGitHubReleases';
 import { 
@@ -15,7 +15,12 @@ import {
 } from '../constants/links';
 
 export const Home: React.FC = () => {
-  useDocumentTitle('Konvert - Privacy-First File Converter for Android & Windows');
+  usePageSeo({
+    title: 'Konvert - #1 Privacy-First File Converter & Image Compressor (Offline & Free)',
+    description: 'Convert files and compress images 100% locally on your device with zero cloud telemetry. Fast, offline-ready file converter for Android, Windows, and Web. No ads, no paywalls.',
+    keywords: 'offline file converter, free image compressor, privacy pdf converter, docx to pdf offline, local file converter, android file converter apk, windows file converter',
+    canonicalPath: '/',
+  });
 
   const [modalOpen, setModalOpen] = useState(false);
   const { latestTag } = useGitHubReleases('V1.7.0');

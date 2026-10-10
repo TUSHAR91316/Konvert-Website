@@ -1,13 +1,8 @@
-import { useEffect } from 'react';
+import { usePageSeo } from './usePageSeo';
 
 /**
- * Custom hook to update document title on mount and restore default on unmount
+ * Custom hook to update document title
  */
-export const useDocumentTitle = (title: string, defaultTitle = 'Konvert'): void => {
-  useEffect(() => {
-    document.title = title;
-    return () => {
-      document.title = defaultTitle;
-    };
-  }, [title, defaultTitle]);
+export const useDocumentTitle = (title: string): void => {
+  usePageSeo({ title });
 };

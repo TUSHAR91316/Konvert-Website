@@ -2,10 +2,35 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, ShieldCheck } from 'lucide-react';
 import { ConverterWidget } from '../components/ConverterWidget';
-import { useDocumentTitle } from '../hooks/useDocumentTitle';
+import { usePageSeo } from '../hooks/usePageSeo';
 
 export const Studio: React.FC = () => {
-  useDocumentTitle('Local Conversion Studio — Konvert');
+  usePageSeo({
+    title: 'Free Online Image Compressor & PDF Compiler — Konvert Studio',
+    description: 'Compress PNG, JPG, and WEBP images locally in your browser memory and compile multi-page PDF documents with zero file uploads or server retention.',
+    keywords: 'online image compressor, browser image to pdf, free offline photo compression, local pdf maker, secure in-browser converter',
+    canonicalPath: '/studio',
+    schema: {
+      '@context': 'https://schema.org',
+      '@type': 'WebApplication',
+      'name': 'Konvert Local Conversion Studio',
+      'url': 'https://konvert-website.vercel.app/studio',
+      'applicationCategory': 'MultimediaApplication',
+      'operatingSystem': 'Any Web Browser',
+      'browserRequirements': 'Requires JavaScript and HTML5 Canvas support',
+      'offers': {
+        '@type': 'Offer',
+        'price': '0',
+        'priceCurrency': 'USD'
+      },
+      'featureList': [
+        'Browser-memory PNG, JPG, WEBP compression',
+        'Multi-page A4 PDF compilation',
+        'Quality percentage presets (90%, 75%, 50%)',
+        'Zero cloud uploads'
+      ]
+    }
+  });
 
   return (
     <main className="page-container" style={{ paddingBottom: '4rem' }}>

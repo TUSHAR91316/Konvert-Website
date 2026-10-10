@@ -4,9 +4,9 @@ import {
   ArrowLeft, MessageSquare, Star, Bug, Sparkles, Sliders, Zap, 
   Send, ExternalLink, Copy, Check, ShieldCheck, CheckCircle2 
 } from 'lucide-react';
-import { GithubIcon } from '../components/GithubIcon';
 import { useToast } from '../context/ToastContext';
-import { useDocumentTitle } from '../hooks/useDocumentTitle';
+import { GithubIcon } from '../components/GithubIcon';
+import { usePageSeo } from '../hooks/usePageSeo';
 import type { FeedbackCategory } from '../types/feedback';
 import { 
   RATING_LABELS, 
@@ -25,7 +25,12 @@ const CATEGORIES: { id: FeedbackCategory; label: string; icon: React.FC<{ style?
 ];
 
 export const Feedback: React.FC = () => {
-  useDocumentTitle('Feedback & Suggestions — Konvert');
+  usePageSeo({
+    title: 'Feedback & Suggestions Hub — Konvert',
+    description: 'Help shape future releases of Konvert. Submit in-app bug reports, suggest file format converters, or open public GitHub issues with diagnostic logs.',
+    keywords: 'konvert feedback, suggest feature, report bug file converter, konvert issues, feedback hub',
+    canonicalPath: '/feedback',
+  });
   const { showToast } = useToast();
 
   const [category, setCategory] = useState<FeedbackCategory>('feature');
