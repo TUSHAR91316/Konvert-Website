@@ -1,7 +1,7 @@
 # Konvert - Advanced File Management & Conversion Tool
 
 <p align="center">
-  <img src="assets/images/readme_icon.png" width="150" alt="Konvert Logo">
+  <img src="readme_icon.png" width="150" alt="Konvert Logo">
 </p>
 
 <p align="center">
@@ -14,8 +14,12 @@
 </p>
 
 <p align="center">
-  <img src="https://github.com/TUSHAR91316/converter_app/actions/workflows/flutter_ci.yml/badge.svg?branch=main" alt="Flutter CI">
-  <img src="https://github.com/TUSHAR91316/converter_app/actions/workflows/backend_ci.yml/badge.svg?branch=main" alt="Backend CI">
+  <a href="https://github.com/TUSHAR91316/Konvert/releases">
+    <img src="https://img.shields.io/github/v/release/TUSHAR91316/Konvert?color=10b981&label=Release" alt="Latest Release">
+  </a>
+  <a href="https://github.com/TUSHAR91316/Konvert/blob/main/LICENSE">
+    <img src="https://img.shields.io/github/license/TUSHAR91316/Konvert?color=06b6d4" alt="License">
+  </a>
 </p>
 
 Konvert is a hybrid, secure, and powerful mobile application designed to handle file conversions and compression with a focus on **User Privacy** and **Security**. Unlike typical web tools, Konvert processes sensitive files (like Images) locally on your device whenever possible.
@@ -88,7 +92,7 @@ This project uses **GitHub Actions** to enjoy a modern DevOps workflow.
 This application relies on a local Docker backend securely exposed via an ngrok Tunnel with a static domain, eliminating cloud hosting costs while retaining global accessibility for your mobile app.
 
 1. **Download the Backend Files**
-   Because Konvert is closed-source, you can download the backend server files (`backend.zip`) directly from our [Public GitHub Releases Page](https://github.com/TUSHAR91316/Konvert-Website/releases). Extract this `backend.zip` folder to your computer.
+   Because Konvert is privacy-first, you can download the backend server files (`backend.zip`) directly from our [Public GitHub Releases Page](https://github.com/TUSHAR91316/Konvert/releases). Extract this `backend.zip` folder to your computer.
 2. **Configure Your Credentials**:
    Inside the extracted folder, rename `.env.example` to `.env`. Paste your free Ngrok Auth Token and Static Domain inside this file.
 3. **Run the Backend (Docker Compose)**:

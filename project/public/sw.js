@@ -1,33 +1,21 @@
-const CACHE_NAME = 'konvert-cache-v1';
-const ASSETS_TO_CACHE = [
+const CACHE_NAME = 'konvert-cache-v2';
+const PRECACHE_ASSETS = [
   '/',
   '/index.html',
-  '/self-hosting',
-  '/self-hosting.html',
-  '/privacy-policy',
-  '/privacy-policy.html',
-  '/roadmap',
-  '/roadmap.html',
-  '/faq',
-  '/faq.html',
-  '/community',
-  '/community.html',
-  '/style.css',
-  '/script.js',
   '/readme_icon.webp',
   '/manifest.json'
 ];
 
-// Install Event
+// Install Event — precache core shell
 self.addEventListener('install', (e) => {
   e.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
-    }).then(() => self.skipWaiting())
+    caches.open(CACHE_NAME)
+      .then((cache) => cache.addAll(PRECACHE_ASSETS))
+      .then(() => self.skipWaiting())
   );
 });
 
-// Activate Event
+// Activate Event — cleanup outdated caches
 self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys().then((keys) => {
@@ -46,37 +34,37 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
 
-  // Cache-first for local static assets
-  if (url.origin === self.location.origin) {
-    e.respondWith(
-      caches.match(e.request).then((cachedResponse) => {
-        if (cachedResponse) {
-          // Dynamically update the cache in the background
-          fetch(e.request).then((networkResponse) => {
-            if (networkResponse.status === 200) {
-              caches.open(CACHE_NAME).then((cache) => cache.put(e.request, networkResponse));
-            }
-          }).catch(() => {});
-          return cachedResponse;
-        }
+  // Skip non-GET requests
+  if (e.request.method !== 'GET') return;
 
-        return fetch(e.request).then((networkResponse) => {
-          if (networkResponse.status === 200) {
-            return caches.open(CACHE_NAME).then((cache) => {
-              cache.put(e.request, networkResponse.clone());
-              return networkResponse;
-            });
+  // Local assets
+  if (url.origin === self.location.origin) {
+    // Navigations (HTML pages): Network-first with offline fallback to /index.html
+    if (e.request.mode === 'navigate') {
+      e.respondWith(
+        fetch(e.request).catch(() => caches.match('/index.html') || caches.match('/'))
+      );
+      return;
+    }
+
+    // Static assets (hashed bundles / images): Stale-while-revalidate
+    e.respondWith(
+      caches.match(e.request).then((cached) => {
+        const fetchPromise = fetch(e.request).then((networkRes) => {
+          if (networkRes && networkRes.status === 200) {
+            const resClone = networkRes.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(e.request, resClone));
           }
-          return networkResponse;
-        });
+          return networkRes;
+        }).catch(() => cached);
+
+        return cached || fetchPromise;
       })
     );
   } else {
-    // Network-first for external dependencies (GitHub APIs etc.)
+    // External APIs (GitHub releases): Network-first
     e.respondWith(
-      fetch(e.request).catch(() => {
-        return caches.match(e.request);
-      })
+      fetch(e.request).catch(() => caches.match(e.request))
     );
   }
 });
