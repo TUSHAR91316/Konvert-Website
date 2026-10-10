@@ -1,15 +1,18 @@
 {
-  "name": "Konvert - Advanced File Converter",
+  "name": "Konvert - Privacy-First File Converter",
   "short_name": "Konvert",
-  "description": "Privacy-first file conversion and image compression tool.",
+  "description": "Privacy-first offline file converter and image compressor for Android and Windows.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#111827",
+  "background_color": "#07090e",
   "theme_color": "#10b981",
   "orientation": "any",
+  "lang": "en",
+  "categories": ["utilities", "productivity"],
   "icons": [
     {
-      "src": "readme_icon.webp",
+      "src": "/readme_icon.webp",
       "sizes": "512x512",
       "type": "image/webp",
       "purpose": "any maskable"
