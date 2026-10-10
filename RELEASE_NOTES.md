@@ -42,18 +42,20 @@ This release upgrades every direct dependency to its latest available version, m
 | Package | Previous | Now | Purpose |
 |---|---|---|---|
 | `google_sign_in` | 6.2.2 | **7.2.0** | Migrated to Android Credential Manager API |
-| `permission_handler` | 12.0.3 | **13.0.0** | Android 14 granular media permissions |
-| `firebase_core` | 4.12.1 | **4.13.0** | Core Firebase SDK modernization |
-| `firebase_auth` | 6.5.6 | **6.5.7** | Authentication session stability |
-| `cloud_firestore` | 6.7.1 | **6.8.0** | Cloud database sync performance |
+| `permission_handler` | 12.0.3 | **13.0.1** | Android 14 granular media permissions |
+| `firebase_core` | 4.12.1 | **4.14.0** | Core Firebase SDK modernization |
+| `firebase_auth` | 6.5.6 | **6.6.0** | Authentication session stability |
+| `cloud_firestore` | 6.7.1 | **6.9.0** | Cloud database sync performance |
 | `google_fonts` | 6.3.3 | **8.2.1** | Inter font family typography updates |
-| `file_picker` | 10.x | **11.0.3** | High-performance document & image picker |
+| `file_picker` | 10.x | **12.1.1** | High-performance document & image picker (v12 API) |
+| `flutter_secure_storage` | 10.3.1 | **11.0.0** | Hardware-backed secure storage with Windows 4.2.2 support |
 | `open_file` | 3.x | **4.0.0** | Native Android installer invocation |
 | `pdf` | 3.12.0 | **3.13.0** | Offline document rendering & PDF creation |
 | `printing` | 5.14.3 | **5.15.0** | Direct rasterization & print engine |
 | `dio` | 5.10.0 | **5.11.0** | Streaming HTTP client with Ngrok bypass headers |
 | `sqflite` | 2.4.2+1 | **2.4.3** | High-speed local history database |
 | `flutter_image_compress` | 2.5.0 | **2.5.1** | Native image compression algorithms |
+| `package_info_plus` | 9.0.1 | **10.2.1** | Modernized app metadata platform interface |
 
 ---
 

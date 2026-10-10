@@ -998,7 +998,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .release-node.latest { background: var(--primary-gradient); color: #fff; }
-.release-node.stable { background: var(--cyan-gradient); color: #fff; }
+.release-node.major, .release-node.stable { background: var(--cyan-gradient); color: #fff; }
 .release-node.patch { background: var(--indigo-gradient); color: #fff; }
 .release-node.old { background: linear-gradient(135deg, #f59e0b, #d97706); color: #fff; }
 
@@ -1044,7 +1044,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .tag-latest { background: rgba(16, 185, 129, 0.15); color: var(--emerald-500); border: 1px solid rgba(16, 185, 129, 0.3); }
-.tag-stable { background: rgba(6, 182, 212, 0.12); color: var(--cyan-500); border: 1px solid rgba(6, 182, 212, 0.25); }
+.tag-major, .tag-stable { background: rgba(6, 182, 212, 0.12); color: var(--cyan-500); border: 1px solid rgba(6, 182, 212, 0.25); }
 .tag-patch { background: rgba(99, 102, 241, 0.12); color: var(--indigo-500); border: 1px solid rgba(99, 102, 241, 0.25); }
 .tag-prerel { background: rgba(245, 158, 11, 0.12); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
 

@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Calendar, Download, Package, WifiOff, RefreshCw, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowLeft, Calendar, Download, Package, WifiOff, RefreshCw, ChevronDown, ChevronUp, Layers, Wrench, Sparkles } from 'lucide-react';
 import { GithubIcon } from '../components/GithubIcon';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { useGitHubReleases } from '../hooks/useGitHubReleases';
 import { GITHUB_RELEASES_URL } from '../constants/links';
+import { isMajorRelease } from '../utils/version';
 
 export const Roadmap: React.FC = () => {
   useDocumentTitle('Roadmap & Releases — Konvert');
 
   const { releases, stats, loading, error, refresh } = useGitHubReleases('V1.7.0');
   const [expandedItems, setExpandedItems] = useState<Record<number, boolean>>({});
+  const [filter, setFilter] = useState<'all' | 'major' | 'patch'>('all');
 
   // Mini markdown → HTML parser
   const parseMarkdown = (md: string) => {
@@ -59,6 +61,15 @@ export const Roadmap: React.FC = () => {
     setExpandedItems(prev => ({ ...prev, [idx]: !prev[idx] }));
   };
 
+  const majorCount = releases.filter(r => isMajorRelease(r.tag_name)).length;
+  const patchCount = releases.filter(r => !isMajorRelease(r.tag_name)).length;
+
+  const filteredReleases = releases.filter(r => {
+    if (filter === 'major') return isMajorRelease(r.tag_name);
+    if (filter === 'patch') return !isMajorRelease(r.tag_name);
+    return true;
+  });
+
   return (
     <main style={{ paddingBottom: '4rem' }}>
       {/* Hero Section */}
@@ -73,17 +84,19 @@ export const Roadmap: React.FC = () => {
             Live from GitHub Releases
           </div>
           <h1 className="roadmap-hero-title">Konvert Roadmap &amp; Releases</h1>
-          <p className="roadmap-hero-sub">Every version, every changelog — pulled automatically from GitHub. See what's shipped and what's next.</p>
+          <p className="roadmap-hero-sub">
+            Every version and changelog pulled live from GitHub — categorized into <strong>Major Releases (1.x)</strong> and incremental <strong>Patches (1.x.x)</strong>.
+          </p>
 
           {!loading && !error && (
             <div className="stats-bar" style={{ display: 'flex' }}>
               <div className="stat-item">
                 <div className="stat-value">{stats.versions}</div>
-                <div className="stat-label">Versions</div>
+                <div className="stat-label">Total Versions</div>
               </div>
               <div className="stat-item">
                 <div className="stat-value">{stats.latest}</div>
-                <div className="stat-label">Latest</div>
+                <div className="stat-label">Latest Version</div>
               </div>
               <div className="stat-item">
                 <div className="stat-value">{stats.downloads}</div>
@@ -97,6 +110,41 @@ export const Roadmap: React.FC = () => {
       {/* Timeline Section */}
       <section className="timeline-section">
         <div className="container">
+          {/* Release Filter Tabs */}
+          {!loading && !error && releases.length > 0 && (
+            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '2.5rem' }}>
+              <button
+                type="button"
+                onClick={() => setFilter('all')}
+                className={`category-pill-btn${filter === 'all' ? ' active' : ''}`}
+                style={{ padding: '0.45rem 1rem', fontSize: '0.85rem', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
+              >
+                <Layers style={{ width: '14px', height: '14px' }} />
+                <span>All Releases ({releases.length})</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setFilter('major')}
+                className={`category-pill-btn${filter === 'major' ? ' active' : ''}`}
+                style={{ padding: '0.45rem 1rem', fontSize: '0.85rem', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
+              >
+                <Sparkles style={{ width: '14px', height: '14px' }} />
+                <span>Major Versions (1.x) ({majorCount})</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setFilter('patch')}
+                className={`category-pill-btn${filter === 'patch' ? ' active' : ''}`}
+                style={{ padding: '0.45rem 1rem', fontSize: '0.85rem', display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}
+              >
+                <Wrench style={{ width: '14px', height: '14px' }} />
+                <span>Patches (1.x.x) ({patchCount})</span>
+              </button>
+            </div>
+          )}
+
           {loading && (
             <div className="loader-wrapper">
               <div className="spinner" style={{ margin: '0 auto 1.5rem auto' }} />
@@ -120,18 +168,18 @@ export const Roadmap: React.FC = () => {
             </div>
           )}
 
-          {!loading && !error && releases.map((release, idx) => {
+          {!loading && !error && filteredReleases.map((release, idx) => {
             const apkAsset = release.assets.find(a => a.name.endsWith('.apk') && !a.name.endsWith('.sha1'));
             const zipAsset = release.assets.find(a => a.name.endsWith('.zip'));
             
-            const isLatest = idx === 0 && !release.prerelease;
+            const isLatest = idx === 0 && !release.prerelease && filter === 'all';
             const isPrerelease = release.prerelease;
-            const isMajorMinor = /v?\d+\.\d+\.0$/i.test(release.tag_name);
+            const isMajor = isMajorRelease(release.tag_name);
 
             let nodeClass = 'old';
             if (isLatest) nodeClass = 'latest';
             else if (isPrerelease) nodeClass = 'prerel';
-            else if (isMajorMinor) nodeClass = 'stable';
+            else if (isMajor) nodeClass = 'major';
             else nodeClass = 'patch';
 
             let nodeLabel = release.tag_name.replace(/^v/i, '');
@@ -142,7 +190,7 @@ export const Roadmap: React.FC = () => {
             return (
               <div key={release.tag_name || idx} className="timeline" style={{ position: 'relative' }}>
                 <div className="release-item">
-                  <div className={`release-node ${nodeClass}`}>
+                  <div className={`release-node ${nodeClass}`} title={isMajor ? 'Major Version' : 'Patch Release'}>
                     {nodeLabel}
                   </div>
 
@@ -152,8 +200,11 @@ export const Roadmap: React.FC = () => {
                         <div className="release-tag-group">
                           {isLatest && <span className="release-tag tag-latest">Latest</span>}
                           {isPrerelease && <span className="release-tag tag-prerel">Pre-release</span>}
-                          {!isLatest && !isPrerelease && isMajorMinor && <span className="release-tag tag-stable">Stable</span>}
-                          {!isLatest && !isPrerelease && !isMajorMinor && <span className="release-tag tag-patch">Patch</span>}
+                          {isMajor ? (
+                            <span className="release-tag tag-major">Major Version</span>
+                          ) : (
+                            <span className="release-tag tag-patch">Patch</span>
+                          )}
                         </div>
                         <h2 className="release-name">{release.name || release.tag_name}</h2>
                       </div>
